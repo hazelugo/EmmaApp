@@ -1,10 +1,11 @@
 <script setup>
 defineProps({
-  num1:     { type: Number, required: true },
-  num2:     { type: Number, required: true },
-  operator: { type: String, required: true },
-  answer:   { type: String, default: '' },
-  feedback: { type: String, default: '' },
+  num1:       { type: Number, required: true },
+  num2:       { type: Number, required: true },
+  operator:   { type: String, required: true },
+  answer:     { type: String, default: '' },
+  feedback:   { type: String, default: '' },
+  problemKey: { type: Number, default: 0 },
 })
 </script>
 
@@ -19,8 +20,8 @@ defineProps({
       'shake ring-4 ring-mc-red/60': feedback === 'wrong',
     }"
   >
-    <!-- Problem display -->
-    <div class="flex items-center gap-3 text-center">
+    <!-- Problem display — pop-in on new problem -->
+    <div class="flex items-center gap-3 text-center pop-in" :key="problemKey">
       <!-- First Number -->
       <span class="text-6xl md:text-7xl font-extrabold text-mc-sand drop-shadow-lg">
         {{ num1 }}
