@@ -8,9 +8,13 @@ import { ref, computed, reactive } from 'vue'
  */
 export function useMathGame () {
   /* ── Score & Streak ─────────────────────────────────────────── */
-  const stars      = ref(0)
+  const stars      = ref(Number(localStorage.getItem('emma-stars')) || 0)
   const streak     = ref(0)
   const problemKey = ref(0) // bumped on each new problem for transition animations
+
+  // Track the last star count we showed a celebration for to avoid re-triggering
+  const lastMilestone = ref(Math.floor(stars.value / 10) * 10)
+  const showLevelUp   = ref(false)
 
   /* ── Current Problem ────────────────────────────────────────── */
   const currentProblem = reactive({
@@ -95,8 +99,18 @@ export function useMathGame () {
       feedback.value = 'correct'
       stars.value++
       streak.value++
+
+      // Persistence
+      localStorage.setItem('emma-stars', stars.value)
+
+      // Milestone check: every 10 stars (10, 20, 30...)
+      if (stars.value > 0 && stars.value % 10 === 0 && stars.value > lastMilestone.value) {
+        showLevelUp.value = true
+        lastMilestone.value = stars.value
+      }
     } else {
       feedback.value = 'wrong'
+      // Pause/reset streak as requested
       streak.value = 0
     }
 
@@ -128,7 +142,7 @@ export function useMathGame () {
   generateProblem()
 
   return {
-    // State (read-only externally is fine — reactive refs)
+    // State
     stars,
     streak,
     problemKey,
@@ -136,6 +150,7 @@ export function useMathGame () {
     answer,
     feedback,
     correctAnswer,
+    showLevelUp,
 
     // Difficulty info
     difficulty,

@@ -3,26 +3,33 @@ import ScoreHeader   from './components/ScoreHeader.vue'
 import MascotPanel   from './components/MascotPanel.vue'
 import ChallengeZone from './components/ChallengeZone.vue'
 import NumberPad     from './components/NumberPad.vue'
-import ConfettiBurst from './components/ConfettiBurst.vue'
+import LevelUpModal  from './components/LevelUpModal.vue'
+import CharacterSelect from './components/CharacterSelect.vue'
 
 import { useMathGame } from './composables/useMathGame.js'
 import { useSound }    from './composables/useSound.js'
 
 import { ref } from 'vue'
+import confetti from 'canvas-confetti'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
   stars, streak, problemKey,
   currentProblem, answer, feedback,
-  difficulty,
+  difficulty, showLevelUp,
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace,
 } = useMathGame()
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak } = useSound()
+const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3 } = useSound()
 
-/* ── UI State ─────────────────────────────────────────────────── */
-const showConfetti = ref(false)
+/* ── Character Selection ──────────────────────────────────────── */
+const selectedCharacter = ref(null)
+
+function onSelectCharacter(char) {
+  selectedCharacter.value = char
+  playTap()
+}
 
 /* ── Number Pad Handlers ──────────────────────────────────────── */
 function onDigit (digit) {
@@ -38,8 +45,18 @@ function onSubmit () {
   if (!result) return
 
   if (result === 'correct') {
-    showConfetti.value = true
+    // Canvas-Confetti Trigger
+    // Mario-themed confetti burst
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#FFB300'],
+      shapes: ['star', 'circle'],
+    })
+
     playCorrect()
+    playSuccessMP3()
 
     // Streak fanfare at milestones
     if (streak.value === 5 || streak.value === 10 || streak.value % 10 === 0) {
@@ -47,23 +64,47 @@ function onSubmit () {
     }
 
     setTimeout(() => {
-      showConfetti.value = false
-      generateProblem()
+      // Don't generate next problem if level up is being shown
+      if (!showLevelUp.value) generateProblem()
     }, 1400)
   } else {
     playWrong()
     setTimeout(clearFeedback, 900)
   }
 }
+
+function closeLevelUp() {
+  showLevelUp.value = false
+  generateProblem()
+}
+
+// Watch for level up to play the fanfare
+import { watch } from 'vue'
+watch(showLevelUp, (val) => {
+  if (val) playLevelUp()
+})
 </script>
 
 <template>
   <div
     id="app-root"
-    class="flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-3 gap-3 select-none"
+    class="relative z-10 flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-3 gap-3 select-none"
   >
-    <!-- Confetti overlay -->
-    <ConfettiBurst :active="showConfetti" />
+    <!-- Character Select Overlay -->
+    <Transition name="fade">
+      <CharacterSelect 
+        v-if="!selectedCharacter" 
+        @select="onSelectCharacter" 
+      />
+    </Transition>
+
+    <!-- Level Up Modal overlay -->
+    <LevelUpModal 
+
+      :show="showLevelUp" 
+      :stars="stars" 
+      @close="closeLevelUp" 
+    />
 
     <!-- ★ Score Header -->
     <ScoreHeader
@@ -77,7 +118,7 @@ function onSubmit () {
     <!-- Middle: Mascot + Challenge -->
     <div class="flex flex-1 gap-3 items-stretch min-h-0">
       <!-- Mascot (left) -->
-      <MascotPanel :feedback="feedback" />
+      <MascotPanel v-if="selectedCharacter" :feedback="feedback" :character="selectedCharacter" />
 
       <!-- Challenge Zone (centre) -->
       <ChallengeZone
