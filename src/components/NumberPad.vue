@@ -5,17 +5,17 @@ defineProps({
 
 const emit = defineEmits(['digit', 'backspace', 'submit'])
 
-const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+const digits = [7, 8, 9, 4, 5, 6, 1, 2, 3]
 </script>
 
 <template>
   <nav
     id="number-pad"
-    class="block-border rounded-3xl bg-dark/85 backdrop-blur-sm p-3"
+    class="block-border rounded-3xl bg-dark/85 backdrop-blur-sm p-4 mx-auto max-w-sm"
     aria-label="Number pad"
   >
-    <div class="grid grid-cols-4 gap-2">
-      <!-- Digit buttons: 1-9 (Pipe-green like warp pipes) -->
+    <div class="grid grid-cols-3 gap-3">
+      <!-- Digit buttons: 7-9, 4-6, 1-3 (Pipe-green like warp pipes) -->
       <button
         v-for="d in digits.slice(0, 9)"
         :key="d"
@@ -79,7 +79,7 @@ const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
       <button
         id="btn-submit"
         :disabled="disabled"
-        class="btn-press col-span-2 flex items-center justify-center
+        class="btn-press flex items-center justify-center
                rounded-2xl font-extrabold text-2xl md:text-3xl
                min-h-[60px] md:min-h-[68px]
                bg-star-gold text-dark

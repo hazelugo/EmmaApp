@@ -9,7 +9,7 @@ import { ref, computed, reactive } from 'vue'
 export function useMathGame () {
   /* ── Score & Streak ─────────────────────────────────────────── */
   const stars      = ref(Number(localStorage.getItem('emma-stars')) || 0)
-  const streak     = ref(0)
+  const streak     = ref(Number(localStorage.getItem('emma-streak')) || 0)
   const problemKey = ref(0) // bumped on each new problem for transition animations
 
   // Track the last star count we showed a celebration for to avoid re-triggering
@@ -102,6 +102,7 @@ export function useMathGame () {
 
       // Persistence
       localStorage.setItem('emma-stars', stars.value)
+      localStorage.setItem('emma-streak', streak.value)
 
       // Milestone check: every 10 stars (10, 20, 30...)
       if (stars.value > 0 && stars.value % 10 === 0 && stars.value > lastMilestone.value) {
@@ -112,6 +113,7 @@ export function useMathGame () {
       feedback.value = 'wrong'
       // Pause/reset streak as requested
       streak.value = 0
+      localStorage.setItem('emma-streak', streak.value)
     }
 
     adjustDifficulty()

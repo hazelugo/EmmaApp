@@ -1,5 +1,6 @@
 <script setup>
 import marioCoinSrc from '../assets/mario-coin.png'
+import starSrc from '../assets/star.png'
 
 defineProps({
   stars:      { type: Number, default: 0 },
@@ -40,15 +41,10 @@ defineEmits(['toggle-mute'])
       <!-- Streak Badge with Mario SVG Super Star -->
       <div
         v-if="streak >= 2"
-        class="flex items-center gap-1 rounded-full bg-star-gold/25 border-2 border-star-gold px-2 py-1"
+        class="flex items-center gap-1 rounded-full px-2 py-1"
       >
-        <!-- SVG Super Star (with eyes, like Mario) -->
-        <svg viewBox="0 0 24 24" width="22" height="22" class="streak-star">
-          <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
-            fill="#FFD700" stroke="#CC9900" stroke-width="1.2"/>
-          <circle cx="10.2" cy="12" r="1.1" fill="#2C2C2C"/>
-          <circle cx="13.8" cy="12" r="1.1" fill="#2C2C2C"/>
-        </svg>
+        <!-- Star PNG (with eyes, like Mario) -->
+        <img :src="starSrc" alt="star" class="w-6 h-6 streak-star" style="image-rendering: pixelated;" />
         <span class="text-lg md:text-xl font-bold text-star-gold">{{ streak }}</span>
       </div>
 
@@ -56,12 +52,11 @@ defineEmits(['toggle-mute'])
       <button
         id="btn-mute"
         class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
-               rounded-xl bg-peach-dark/60 border-2 border-peach-light/50
-               hover:bg-peach-dark/80 transition-colors cursor-pointer"
+               rounded-xl hover:scale-110 transition-transform cursor-pointer"
         :aria-label="isMuted ? 'Unmute sounds' : 'Mute sounds'"
         @click="$emit('toggle-mute')"
       >
-        <span class="text-xl md:text-2xl">{{ isMuted ? '🔇' : '🔊' }}</span>
+        <span class="text-xl md:text-2xl drop-shadow-md">{{ isMuted ? '🔇' : '🔊' }}</span>
       </button>
     </div>
   </header>

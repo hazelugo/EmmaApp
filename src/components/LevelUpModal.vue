@@ -3,6 +3,8 @@ import { ref, watch, onMounted, onUnmounted } from 'vue'
 import confetti from 'canvas-confetti'
 import mascotUrl from '../assets/mascot.png'
 import marioCoinSrc from '../assets/mario-coin.png'
+import castleSrc from '../assets/castle.png'
+import starSrc from '../assets/star.png'
 
 const props = defineProps({
   show: { type: Boolean, default: false },
@@ -100,45 +102,9 @@ onUnmounted(() => {
         <div class="ground-fill"></div>
       </div>
 
-      <!-- ═══ Castle (CSS pixel art) ═══ -->
+      <!-- ═══ Castle (PNG asset) ═══ -->
       <div class="castle-wrap" :class="{ 'castle-visible': sceneReady }">
-        <div class="castle-struct">
-          <!-- Left turret -->
-          <div class="turret">
-            <div class="turret-roof"></div>
-            <div class="turret-body">
-              <div class="turret-window"></div>
-            </div>
-          </div>
-          <!-- Center tower -->
-          <div class="center-tower">
-            <div class="center-roof"></div>
-            <div class="tower-flag-pole">
-              <div class="tower-flag"></div>
-            </div>
-            <div class="center-body">
-              <div class="turret-window"></div>
-            </div>
-          </div>
-          <!-- Right turret -->
-          <div class="turret">
-            <div class="turret-roof"></div>
-            <div class="turret-body">
-              <div class="turret-window"></div>
-            </div>
-          </div>
-          <!-- Main wall -->
-          <div class="castle-wall">
-            <div class="castle-battlements">
-              <span></span><span></span><span></span><span></span><span></span>
-            </div>
-            <!-- Door -->
-            <div class="castle-archway">
-              <div class="arch-top"></div>
-              <div class="arch-door"></div>
-            </div>
-          </div>
-        </div>
+        <img :src="castleSrc" alt="castle" class="castle-img" style="image-rendering: pixelated;" />
       </div>
 
       <!-- ═══ Flagpole (CSS drawn, green like Mario) ═══ -->
@@ -175,9 +141,9 @@ onUnmounted(() => {
           <p class="sub-text">
             Princess Mathematician<br/>
             <span class="emma-line">
-              <svg class="mario-star" viewBox="0 0 24 24" width="28" height="28"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#FFD700" stroke="#CC9900" stroke-width="1"/><circle cx="10" cy="12" r="1" fill="#2C2C2C"/><circle cx="14" cy="12" r="1" fill="#2C2C2C"/></svg>
+              <img :src="starSrc" alt="star" class="w-7 h-7 mx-1 inline-block star-bounce" style="image-rendering: pixelated;" />
               <span class="emma-name">Emma</span>
-              <svg class="mario-star" viewBox="0 0 24 24" width="28" height="28"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" fill="#FFD700" stroke="#CC9900" stroke-width="1"/><circle cx="10" cy="12" r="1" fill="#2C2C2C"/><circle cx="14" cy="12" r="1" fill="#2C2C2C"/></svg>
+              <img :src="starSrc" alt="star" class="w-7 h-7 mx-1 inline-block star-bounce" style="image-rendering: pixelated;" />
             </span>
           </p>
 
@@ -248,146 +214,9 @@ onUnmounted(() => {
 }
 .castle-visible { opacity: 1; transform: translateY(0); }
 
-.castle-struct {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-}
-
-/* Turrets */
-.turret, .center-tower {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-}
-.turret:first-child { left: -16px; bottom: 60px; }
-.turret:nth-child(3) { right: -16px; bottom: 60px; }
-.center-tower { left: 50%; transform: translateX(-50%); bottom: 70px; z-index: 2; }
-
-.turret-roof {
-  width: 0; height: 0;
-  border-left: 14px solid transparent;
-  border-right: 14px solid transparent;
-  border-bottom: 16px solid #E52521;
-}
-.center-roof {
-  width: 0; height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-bottom: 20px solid #E52521;
-}
-.turret-body {
-  width: 24px;
-  height: 28px;
-  background: #E8D5A3;
-  border: 2px solid #6B4226;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.center-body {
-  width: 30px;
-  height: 34px;
-  background: #E8D5A3;
-  border: 2px solid #6B4226;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.turret-window {
-  width: 8px;
-  height: 10px;
-  background: #1a1a4e;
-  border: 1px solid #6B4226;
-  border-radius: 4px 4px 0 0;
-}
-
-/* Tower flag */
-.tower-flag-pole {
-  position: absolute;
-  top: -22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 16px;
-  background: #888;
-}
-.tower-flag {
-  position: absolute;
-  top: 0;
-  left: 2px;
-  width: 0; height: 0;
-  border-top: 5px solid #E52521;
-  border-bottom: 5px solid #E52521;
-  border-right: 8px solid transparent;
-  animation: tiny-flag 1s ease-in-out infinite alternate;
-}
-@keyframes tiny-flag {
-  0% { transform: scaleX(1); }
-  100% { transform: scaleX(0.85); }
-}
-
-/* Main castle wall */
-.castle-wall {
-  width: 80px;
-  height: 64px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #E8D5A3 0px, #E8D5A3 14px,
-      #C4A870 14px, #C4A870 16px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      #E8D5A3 0px, #E8D5A3 14px,
-      #C4A870 14px, #C4A870 16px
-    );
-  background-size: 16px 16px;
-  border: 2px solid #6B4226;
-  position: relative;
-}
-.castle-battlements {
-  position: absolute;
-  top: -10px;
-  left: -2px;
-  right: -2px;
-  display: flex;
-  justify-content: space-between;
-}
-.castle-battlements span {
-  width: 12px;
-  height: 10px;
-  background: #E8D5A3;
-  border: 2px solid #6B4226;
-  border-bottom: none;
-}
-
-/* Castle door */
-.castle-archway {
-  position: absolute;
-  bottom: -2px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.arch-top {
-  width: 24px;
-  height: 12px;
-  background: #1a1a4e;
-  border-radius: 12px 12px 0 0;
-  border: 2px solid #6B4226;
-  border-bottom: none;
-}
-.arch-door {
-  width: 24px;
-  height: 18px;
-  background: #1a1a4e;
-  border: 2px solid #6B4226;
-  border-top: none;
+.castle-img {
+  width: 140px; /* Adjust size based on your actual png dimensions */
+  filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.3));
 }
 
 /* ═══ Flagpole (green like Mario!) ═══ */
