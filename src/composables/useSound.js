@@ -21,7 +21,7 @@ const isMuted = ref(false)
 let currentBgmAudio = null
 let audioCtx = null
 
-function getContext () {
+function getContext() {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)()
   }
@@ -39,7 +39,7 @@ function getContext () {
  * @param {number} duration  – Duration in seconds
  * @param {number} volume    – Gain 0–1
  */
-function playTone (freq, type = 'square', duration = 0.15, volume = 0.2) {
+function playTone(freq, type = 'square', duration = 0.15, volume = 0.2) {
   if (isMuted.value) return
   const ctx = getContext()
   const osc = ctx.createOscillator()
@@ -63,7 +63,7 @@ function playTone (freq, type = 'square', duration = 0.15, volume = 0.2) {
 /* ── Named Sound Effects (Mario-inspired) ────────────────────── */
 
 /** Mario coin collect sound — correct answer */
-function playCorrect () {
+function playCorrect() {
   if (isMuted.value) return
   // Classic coin: B5 → E6 (quick two-note chime)
   playTone(987.77, 'square', 0.08, 0.18)
@@ -71,7 +71,7 @@ function playCorrect () {
 }
 
 /** Pipe / bonk — wrong answer */
-function playWrong () {
+function playWrong() {
   if (isMuted.value) return
   // Low thud with a quick drop, like bumping into a pipe
   playTone(180, 'square', 0.12, 0.2)
@@ -79,14 +79,14 @@ function playWrong () {
 }
 
 /** Block bump / button tap */
-function playTap () {
+function playTap() {
   if (isMuted.value) return
   // Quick blocky click (like hitting a ? block lightly)
   playTone(600, 'square', 0.04, 0.1)
 }
 
 /** 1-UP / Power-Up fanfare — streak milestone */
-function playStreak () {
+function playStreak() {
   if (isMuted.value) return
   // 1-UP inspired ascending sequence: E5 → G5 → E6 → C6 → D6 → G6
   const notes = [659.25, 783.99, 1318.5, 1046.5, 1174.66, 1567.98]
@@ -96,7 +96,7 @@ function playStreak () {
 }
 
 /** Super Star power-up jingle — level up celebration */
-function playLevelUp () {
+function playLevelUp() {
   if (isMuted.value) return
   // Triumphant ascending: C5 → E5 → G5 → C6 (with sustain)
   const notes = [523.25, 659.25, 783.99, 1046.5]
@@ -112,7 +112,7 @@ function playLevelUp () {
 }
 
 /** Toggle mute state */
-function toggleMute () {
+function toggleMute() {
   isMuted.value = !isMuted.value
   if (currentBgmAudio) {
     if (isMuted.value) {
@@ -124,30 +124,30 @@ function toggleMute () {
 }
 
 /** Play looping background MP3 for the selected character */
-function playThemeMusic (characterId) {
+function playThemeMusic(characterId) {
   if (currentBgmAudio) {
     currentBgmAudio.pause()
     currentBgmAudio = null
   }
-  
+
   const bgmSrc = CHARACTER_BGM[characterId]
   if (!bgmSrc) return
-  
+
   currentBgmAudio = new Audio(bgmSrc)
   currentBgmAudio.loop = true
   currentBgmAudio.volume = 1.0 // Max volume for mobile audibility
-  
+
   // Ensure we wait for the browser to load the audio chunk before skipping the corrupted 0:00 millisecond
   currentBgmAudio.addEventListener('loadeddata', () => {
-    currentBgmAudio.currentTime = 0.25
+    currentBgmAudio.currentTime = 0.40
   })
-  
+
   if (!isMuted.value) {
     currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
   }
 }
 
-function stopThemeMusic () {
+function stopThemeMusic() {
   if (currentBgmAudio) {
     currentBgmAudio.pause()
     currentBgmAudio = null
@@ -158,7 +158,7 @@ function stopThemeMusic () {
  * Placeholder for an external MP3 success sound.
  * Swap in your own Mario coin / power-up MP3 here.
  */
-function playSuccessMP3 () {
+function playSuccessMP3() {
   if (isMuted.value) return
   console.log('--- SUCCESS MP3 PLACEHOLDER ---')
   /*
@@ -169,7 +169,7 @@ function playSuccessMP3 () {
   */
 }
 
-export function useSound () {
+export function useSound() {
   return {
     isMuted,
     toggleMute,
