@@ -44,7 +44,6 @@ function onSelectCharacter(char) {
   }
   selectedCharacter.value = char
   playThemeMusic(char.id)
-  playTap()
 }
 
 /* ── Number Pad Handlers ──────────────────────────────────────── */
