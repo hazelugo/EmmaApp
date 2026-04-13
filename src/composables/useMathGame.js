@@ -14,8 +14,14 @@ export function useMathGame () {
   const problemKey = ref(0) // bumped on each new problem for transition animations
 
   // Track the last star count we showed a celebration for to avoid re-triggering
-  const lastMilestone = ref(Math.floor(stars.value / 10) * 10)
-  const showLevelUp   = ref(false)
+  const lastMilestone    = ref(Math.floor(stars.value / 10) * 10)
+  const showLevelUp      = ref(false)
+  // Post-level victory screen (Peach wins image)
+  const showLevelVictory = ref(false)
+  const completedLevel   = ref(level.value) // which level was just beaten
+  // Pre-level intro screen (enemy reveal)
+  const showLevelIntro   = ref(false)
+  const pendingLevel     = ref(level.value) // which level the intro is showing for
 
   /* ── Current Problem ────────────────────────────────────────── */
   const currentProblem = reactive({
@@ -107,12 +113,18 @@ export function useMathGame () {
 
       // Milestone check: every 10 stars (10, 20, 30...)
       if (stars.value > 0 && stars.value % 10 === 0 && stars.value > lastMilestone.value) {
-        showLevelUp.value = true
         lastMilestone.value = stars.value
-        
-        if (level.value < 8) {
+
+        // Capture the level that was just beaten, then show victory screen
+        completedLevel.value   = level.value
+        showLevelVictory.value = true
+
+        // Advance to the next level (capped at 7)
+        if (level.value < 7) {
           level.value++
           localStorage.setItem('emma-level', level.value)
+          // Queue the pre-level intro for when the player dismisses victory
+          pendingLevel.value = level.value
         }
       }
     } else {
@@ -155,6 +167,8 @@ export function useMathGame () {
 
   /* ── Initialize ─────────────────────────────────────────────── */
   generateProblem()
+  // Show the intro for the current level on first load
+  showLevelIntro.value = true
 
   return {
     // State
@@ -167,6 +181,10 @@ export function useMathGame () {
     feedback,
     correctAnswer,
     showLevelUp,
+    showLevelVictory,
+    completedLevel,
+    showLevelIntro,
+    pendingLevel,
 
     // Difficulty info
     difficulty,

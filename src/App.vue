@@ -1,15 +1,18 @@
 <script setup>
-import ScoreHeader   from './components/ScoreHeader.vue'
-import MascotPanel   from './components/MascotPanel.vue'
-import ChallengeZone from './components/ChallengeZone.vue'
-import NumberPad     from './components/NumberPad.vue'
-import LevelUpModal  from './components/LevelUpModal.vue'
-import CharacterSelect from './components/CharacterSelect.vue'
+import ScoreHeader      from './components/ScoreHeader.vue'
+import MascotPanel      from './components/MascotPanel.vue'
+import ChallengeZone    from './components/ChallengeZone.vue'
+import NumberPad        from './components/NumberPad.vue'
+import LevelUpModal     from './components/LevelUpModal.vue'
+import CharacterSelect  from './components/CharacterSelect.vue'
+import LevelIntroModal   from './components/LevelIntroModal.vue'
+import LevelVictoryModal from './components/LevelVictoryModal.vue'
 
-import { useMathGame } from './composables/useMathGame.js'
-import { useSound }    from './composables/useSound.js'
+import { useMathGame }    from './composables/useMathGame.js'
+import { useSound }       from './composables/useSound.js'
+import { getLevelTheme }  from './composables/useLevelTheme.js'
 
-import { ref } from 'vue'
+import { ref, computed, watch } from 'vue'
 import confetti from 'canvas-confetti'
 
 /* ── Composables ──────────────────────────────────────────────── */
@@ -17,11 +20,19 @@ const {
   stars, streak, problemKey,
   currentProblem, answer, feedback,
   difficulty, showLevelUp,
+  showLevelVictory, completedLevel,
+  showLevelIntro, pendingLevel,
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace,
 } = useMathGame()
 
 const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3 } = useSound()
+
+/* ── Level themes ───────────────────────────────────────── */
+// Theme for the INCOMING level (pre-level intro)
+const currentTheme  = computed(() => getLevelTheme(pendingLevel.value))
+// Theme for the level that was JUST beaten (victory screen)
+const victoryTheme  = computed(() => getLevelTheme(completedLevel.value))
 
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
@@ -64,8 +75,8 @@ function onSubmit () {
     }
 
     setTimeout(() => {
-      // Don't generate next problem if level up is being shown
-      if (!showLevelUp.value) generateProblem()
+      // Don't generate next problem while victory, intro, or level-up screens are showing
+      if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value) generateProblem()
     }, 1400)
   } else {
     playWrong()
@@ -75,12 +86,36 @@ function onSubmit () {
 
 function closeLevelUp() {
   showLevelUp.value = false
+  if (!showLevelIntro.value && !showLevelVictory.value) generateProblem()
+}
+
+/**
+ * Player tapped "NEXT WORLD" on the victory screen.
+ * Hide victory, then show the pre-level intro for the new level.
+ * If we're on level 7 (Bowser beaten), no next intro — just reset to level 1 flow.
+ */
+function onVictoryNext () {
+  showLevelVictory.value = false
+  // If there's a next level queued, show its intro; else generate a new problem
+  if (completedLevel.value < 7) {
+    showLevelIntro.value = true
+  } else {
+    // Level 7 was the last — just keep playing at max level
+    generateProblem()
+  }
+}
+
+/**
+ * Player tapped "LET'S GO!" — hide the level intro and start playing.
+ */
+function onLevelIntroStart () {
+  showLevelIntro.value = false
+  showLevelUp.value    = false
   generateProblem()
 }
 
-// Watch for level up to play the fanfare
-import { watch } from 'vue'
-watch(showLevelUp, (val) => {
+// Watch for level up / victory to play the fanfare
+watch(showLevelVictory, (val) => {
   if (val) playLevelUp()
 })
 </script>
@@ -97,6 +132,25 @@ watch(showLevelUp, (val) => {
         @select="onSelectCharacter" 
       />
     </Transition>
+
+    <!-- Level Victory — shows after each level is beaten (Peach wins!) -->
+    <LevelVictoryModal
+      v-if="selectedCharacter"
+      :show="showLevelVictory"
+      :level="completedLevel"
+      :theme="victoryTheme"
+      @next="onVictoryNext"
+    />
+
+    <!-- Level Intro — shows before each level with enemy reveal -->
+    <LevelIntroModal
+      v-if="selectedCharacter"
+      :show="showLevelIntro"
+      :level="pendingLevel"
+      :theme="currentTheme"
+      :is-muted="isMuted"
+      @start="onLevelIntroStart"
+    />
 
     <!-- Level Up Modal overlay -->
     <LevelUpModal 
