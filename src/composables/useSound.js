@@ -136,6 +136,7 @@ function playThemeMusic (characterId) {
   currentBgmAudio = new Audio(bgmSrc)
   currentBgmAudio.loop = true
   currentBgmAudio.volume = 1.0 // Max volume for mobile audibility
+  currentBgmAudio.currentTime = 0.1 // Skip the first 100ms to hide the hard 'click/pop' artifact inside the raw MP3 files
   
   if (!isMuted.value) {
     currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
