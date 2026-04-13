@@ -23,21 +23,26 @@ const {
   showLevelVictory, completedLevel,
   showLevelIntro, pendingLevel,
   generateProblem, checkAnswer, clearFeedback,
-  appendDigit, backspace,
+  appendDigit, backspace, resetGame,
 } = useMathGame()
 
 const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3 } = useSound()
 
 /* ── Level themes ───────────────────────────────────────── */
 // Theme for the INCOMING level (pre-level intro)
-const currentTheme  = computed(() => getLevelTheme(pendingLevel.value))
+const currentTheme  = computed(() => getLevelTheme(pendingLevel.value, selectedCharacter.value?.id))
 // Theme for the level that was JUST beaten (victory screen)
-const victoryTheme  = computed(() => getLevelTheme(completedLevel.value))
+const victoryTheme  = computed(() => getLevelTheme(completedLevel.value, selectedCharacter.value?.id))
 
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
 
 function onSelectCharacter(char) {
+  const prevChar = localStorage.getItem('emma-character')
+  if (prevChar !== char.id) {
+    resetGame()
+    localStorage.setItem('emma-character', char.id)
+  }
   selectedCharacter.value = char
   playTap()
 }

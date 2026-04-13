@@ -165,6 +165,27 @@ export function useMathGame () {
     return '/videos/hero.mp4'
   }
 
+  /* ── Reset Logic ────────────────────────────────────────────── */
+  function resetGame () {
+    stars.value = 0
+    streak.value = 0
+    level.value = 1
+    pendingLevel.value = 1
+    completedLevel.value = 1
+    lastMilestone.value = 0
+    showLevelUp.value = false
+    showLevelVictory.value = false
+    showLevelIntro.value = true
+    difficulty.maxOperand = 5
+    difficulty.history = []
+
+    localStorage.setItem('emma-stars', 0)
+    localStorage.setItem('emma-streak', 0)
+    localStorage.setItem('emma-level', 1)
+
+    generateProblem()
+  }
+
   /* ── Initialize ─────────────────────────────────────────────── */
   generateProblem()
   // Show the intro for the current level on first load
@@ -197,5 +218,6 @@ export function useMathGame () {
     appendDigit,
     backspace,
     getCutsceneVideoPath,
+    resetGame,
   }
 }

@@ -2,166 +2,207 @@
  * useLevelTheme.js
  *
  * Maps each level (1–7) to its themed assets:
- *  - enemyImage   — "Peach vs. Enemy" splash shown BEFORE the level
- *  - victoryImage — "Peach wins!" splash shown AFTER the level is beaten
+ *  - enemyImage   — "X vs. Enemy" splash shown BEFORE the level
+ *  - victoryImage — "X wins!" splash shown AFTER the level is beaten
  *  - background gradient
  *  - enemy display name + flavor text
  *  - a synthesized music theme id
  */
 
-/* ── Pre-level (Peach vs. Enemy) images ────────────────────────── */
-import goomba  from '../assets/initial enemies (peach)/1 peach v goomba.png'
-import shy     from '../assets/initial enemies (peach)/2 peach v shy.png'
-import bomb    from '../assets/initial enemies (peach)/3 peach v bomb.png'
-import hammer  from '../assets/initial enemies (peach)/4 peach v hammer.png'
-import chomp   from '../assets/initial enemies (peach)/5 peach v chomp.png'
-import bjr     from '../assets/initial enemies (peach)/6 peach v bjr.png'
-import bowser  from '../assets/initial enemies (peach)/7 peach v bowser.png'
+/* ── PEACH Pre-level images ────────────────────────── */
+import peachGoomba  from '../assets/initial enemies (peach)/1 peach v goomba.png'
+import peachShy     from '../assets/initial enemies (peach)/2 peach v shy.png'
+import peachBomb    from '../assets/initial enemies (peach)/3 peach v bomb.png'
+import peachHammer  from '../assets/initial enemies (peach)/4 peach v hammer.png'
+import peachChomp   from '../assets/initial enemies (peach)/5 peach v chomp.png'
+import peachBjr     from '../assets/initial enemies (peach)/6 peach v bjr.png'
+import peachBowser  from '../assets/initial enemies (peach)/7 peach v bowser.png'
 
-/* ── Post-level (Peach wins!) images ──────────────────────────── */
-import winGoomba  from '../assets/post enemies (peach)/1 peach win goomba.png'
-import winShy     from '../assets/post enemies (peach)/2 peach win shy.png'
-import winBomb    from '../assets/post enemies (peach)/3 peach win bomb.png'
-import winHammer  from '../assets/post enemies (peach)/4 peach win hammer.png'
-import winChomp   from '../assets/post enemies (peach)/5 peach win chomp.png'
-import winBjr     from '../assets/post enemies (peach)/6 peach win bjr.png'
-import winBowser  from '../assets/post enemies (peach)/7 peach win bowser.png'
+/* ── PEACH Post-level (wins!) images ──────────────────────────── */
+import winPeachGoomba  from '../assets/post enemies (peach)/1 peach win goomba.png'
+import winPeachShy     from '../assets/post enemies (peach)/2 peach win shy.png'
+import winPeachBomb    from '../assets/post enemies (peach)/3 peach win bomb.png'
+import winPeachHammer  from '../assets/post enemies (peach)/4 peach win hammer.png'
+import winPeachChomp   from '../assets/post enemies (peach)/5 peach win chomp.png'
+import winPeachBjr     from '../assets/post enemies (peach)/6 peach win bjr.png'
+import winPeachBowser  from '../assets/post enemies (peach)/7 peach win bowser.png'
 
-export const LEVEL_THEMES = {
+/* ── DAISY Pre-level images ────────────────────────── */
+import daisyTatanga   from '../assets/initial enemies (daisy)/1 daisy v tatanga.png'
+import daisyPionpi    from '../assets/initial enemies (daisy)/2 daisy v pionpi.png'
+import daisyMekabon   from '../assets/initial enemies (daisy)/3 daisy v mekabon.png'
+import daisyWigglers  from '../assets/initial enemies (daisy)/4 daisy v wigglers.png'
+import daisyBb        from '../assets/initial enemies (daisy)/5 daisy v bb.png'
+import daisyBiokinton from '../assets/initial enemies (daisy)/6 daisy v biokinton.png'
+import daisySphinx    from '../assets/initial enemies (daisy)/7 daisy v sphinx.png'
+
+/* ── DAISY Post-level (wins!) images ──────────────────────────── */
+import winDaisyTatanga   from '../assets/post enemies (daisy)/1 daisy wins tatanga.png'
+import winDaisyPionpi    from '../assets/post enemies (daisy)/2 daisy wins pionpi.png'
+import winDaisyMekabon   from '../assets/post enemies (daisy)/3 daisy wins mekabon.png'
+import winDaisyWigglers  from '../assets/post enemies (daisy)/4 daisy wins wigglers.png'
+import winDaisyBb        from '../assets/post enemies (daisy)/5 daisy wins bb.png'
+import winDaisyBiokinton from '../assets/post enemies (daisy)/6 daisy win biokinton.png'
+import winDaisySphinx    from '../assets/post enemies (daisy)/7 daisy wins sphinx.png'
+
+const PEACH_THEMES = {
   1: {
     enemyName:    'Goomba',
-    enemyImage:   goomba,
-    victoryImage: winGoomba,
-    bg: {
-      top:    '#6dd5fa',
-      mid:    '#87ceeb',
-      bottom: '#7ADB7E',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#FFF176',
-      bottom: '#7ADB7E',
-    },
+    enemyImage:   peachGoomba,
+    victoryImage: winPeachGoomba,
+    bg: { top: '#6dd5fa', mid: '#87ceeb', bottom: '#7ADB7E' },
+    victoryBg: { top: '#FFD700', mid: '#FFF176', bottom: '#7ADB7E' },
     musicId:    'overworld',
     flavorText: 'A Goomba blocks the path!',
     victoryText: 'Goomba defeated! 👑',
   },
   2: {
     enemyName:    'Shy Guy',
-    enemyImage:   shy,
-    victoryImage: winShy,
-    bg: {
-      top:    '#a18cd1',
-      mid:    '#fbc2eb',
-      bottom: '#c3a3e8',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#f8a5c2',
-      bottom: '#c3a3e8',
-    },
+    enemyImage:   peachShy,
+    victoryImage: winPeachShy,
+    bg: { top: '#a18cd1', mid: '#fbc2eb', bottom: '#c3a3e8' },
+    victoryBg: { top: '#FFD700', mid: '#f8a5c2', bottom: '#c3a3e8' },
     musicId:    'underground',
     flavorText: 'A Shy Guy lurks in the shadows!',
     victoryText: 'Shy Guy unmasked! 🎉',
   },
   3: {
     enemyName:    'Bob-omb',
-    enemyImage:   bomb,
-    victoryImage: winBomb,
-    bg: {
-      top:    '#f7971e',
-      mid:    '#ffd200',
-      bottom: '#e8a838',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#ffd200',
-      bottom: '#f7971e',
-    },
+    enemyImage:   peachBomb,
+    victoryImage: winPeachBomb,
+    bg: { top: '#f7971e', mid: '#ffd200', bottom: '#e8a838' },
+    victoryBg: { top: '#FFD700', mid: '#ffd200', bottom: '#f7971e' },
     musicId:    'desert',
     flavorText: 'Watch out — Bob-omb is ready to blow!',
     victoryText: 'Boom! Bob-omb defused! 💥',
   },
   4: {
     enemyName:    'Hammer Bro',
-    enemyImage:   hammer,
-    victoryImage: winHammer,
-    bg: {
-      top:    '#11998e',
-      mid:    '#38ef7d',
-      bottom: '#1b7a56',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#38ef7d',
-      bottom: '#11998e',
-    },
+    enemyImage:   peachHammer,
+    victoryImage: winPeachHammer,
+    bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
+    victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
     musicId:    'forest',
     flavorText: 'Hammer Bro means business!',
     victoryText: 'Hammer Bro crushed! 🔨',
   },
   5: {
     enemyName:    'Chain Chomp',
-    enemyImage:   chomp,
-    victoryImage: winChomp,
-    bg: {
-      top:    '#0f0c29',
-      mid:    '#302b63',
-      bottom: '#24243e',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#302b63',
-      bottom: '#24243e',
-    },
+    enemyImage:   peachChomp,
+    victoryImage: winPeachChomp,
+    bg: { top: '#0f0c29', mid: '#302b63', bottom: '#24243e' },
+    victoryBg: { top: '#FFD700', mid: '#302b63', bottom: '#24243e' },
     musicId:    'spooky',
     flavorText: 'Chain Chomp is UNLEASHED!',
     victoryText: 'Chain Chomp chained up! ⛓️',
   },
   6: {
     enemyName:    'Baby Bowser Jr.',
-    enemyImage:   bjr,
-    victoryImage: winBjr,
-    bg: {
-      top:    '#b91c1c',
-      mid:    '#ef4444',
-      bottom: '#7f1d1d',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#ef4444',
-      bottom: '#7f1d1d',
-    },
+    enemyImage:   peachBjr,
+    victoryImage: winPeachBjr,
+    bg: { top: '#b91c1c', mid: '#ef4444', bottom: '#7f1d1d' },
+    victoryBg: { top: '#FFD700', mid: '#ef4444', bottom: '#7f1d1d' },
     musicId:    'castle',
     flavorText: 'Bowser Jr. steps up to fight!',
     victoryText: 'Bowser Jr. sent packing! 🐢',
   },
   7: {
     enemyName:    'Bowser',
-    enemyImage:   bowser,
-    victoryImage: winBowser,
-    bg: {
-      top:    '#1a0000',
-      mid:    '#7b0000',
-      bottom: '#3d0000',
-    },
-    victoryBg: {
-      top:    '#FFD700',
-      mid:    '#FF8C00',
-      bottom: '#E52521',
-    },
+    enemyImage:   peachBowser,
+    victoryImage: winPeachBowser,
+    bg: { top: '#1a0000', mid: '#7b0000', bottom: '#3d0000' },
+    victoryBg: { top: '#FFD700', mid: '#FF8C00', bottom: '#E52521' },
     musicId:    'final',
     flavorText: 'BOWSER himself stands in your way!',
     victoryText: 'BOWSER DEFEATED! 🏆 You saved the kingdom!',
   },
 }
 
+const DAISY_THEMES = {
+  1: {
+    enemyName:    'Tatanga',
+    enemyImage:   daisyTatanga,
+    victoryImage: winDaisyTatanga,
+    bg: { top: '#6dd5fa', mid: '#87ceeb', bottom: '#7ADB7E' },
+    victoryBg: { top: '#FFD700', mid: '#FFF176', bottom: '#7ADB7E' },
+    musicId:    'overworld',
+    flavorText: 'Tatanga approaches!',
+    victoryText: 'Tatanga defeated! ✨',
+  },
+  2: {
+    enemyName:    'Pionpi',
+    enemyImage:   daisyPionpi,
+    victoryImage: winDaisyPionpi,
+    bg: { top: '#a18cd1', mid: '#fbc2eb', bottom: '#c3a3e8' },
+    victoryBg: { top: '#FFD700', mid: '#f8a5c2', bottom: '#c3a3e8' },
+    musicId:    'underground',
+    flavorText: 'Pionpi bounces in!',
+    victoryText: 'Pionpi put to rest! 🌟',
+  },
+  3: {
+    enemyName:    'Mekabon',
+    enemyImage:   daisyMekabon,
+    victoryImage: winDaisyMekabon,
+    bg: { top: '#f7971e', mid: '#ffd200', bottom: '#e8a838' },
+    victoryBg: { top: '#FFD700', mid: '#ffd200', bottom: '#f7971e' },
+    musicId:    'desert',
+    flavorText: 'Mekabon is charging up!',
+    victoryText: 'Mekabon dismantled! ⚙️',
+  },
+  4: {
+    enemyName:    'Wigglers',
+    enemyImage:   daisyWigglers,
+    victoryImage: winDaisyWigglers,
+    bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
+    victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
+    musicId:    'forest',
+    flavorText: 'Angry Wigglers ahead!',
+    victoryText: 'Wigglers calmed down! 🐛',
+  },
+  5: {
+    enemyName:    'BB',
+    enemyImage:   daisyBb,
+    victoryImage: winDaisyBb,
+    bg: { top: '#0f0c29', mid: '#302b63', bottom: '#24243e' },
+    victoryBg: { top: '#FFD700', mid: '#302b63', bottom: '#24243e' },
+    musicId:    'spooky',
+    flavorText: 'A wild BB appears!',
+    victoryText: 'BB beaten back! 💫',
+  },
+  6: {
+    enemyName:    'Biokinton',
+    enemyImage:   daisyBiokinton,
+    victoryImage: winDaisyBiokinton,
+    bg: { top: '#b91c1c', mid: '#ef4444', bottom: '#7f1d1d' },
+    victoryBg: { top: '#FFD700', mid: '#ef4444', bottom: '#7f1d1d' },
+    musicId:    'castle',
+    flavorText: 'Biokinton floats into view!',
+    victoryText: 'Biokinton banished! ☁️',
+  },
+  7: {
+    enemyName:    'Sphinx',
+    enemyImage:   daisySphinx,
+    victoryImage: winDaisySphinx,
+    bg: { top: '#1a0000', mid: '#7b0000', bottom: '#3d0000' },
+    victoryBg: { top: '#FFD700', mid: '#FF8C00', bottom: '#E52521' },
+    musicId:    'final',
+    flavorText: 'The mighty Sphinx challenges you!',
+    victoryText: 'SPHINX DEFEATED! 🏆 The cosmos is safe!',
+  },
+}
+
+export const CHARACTER_THEMES = {
+  peach: PEACH_THEMES,
+  daisy: DAISY_THEMES,
+}
+
 /**
- * Returns the theme config for the given level.
- * Falls back to level 1 for anything out of range.
+ * Returns the theme config for the given level and character.
+ * Falls back to peach and level 1.
  */
-export function getLevelTheme (level) {
-  return LEVEL_THEMES[level] ?? LEVEL_THEMES[1]
+export function getLevelTheme (level, characterId = 'peach') {
+  const charTheme = CHARACTER_THEMES[characterId] || CHARACTER_THEMES['peach'];
+  return charTheme[level] ?? charTheme[1];
 }
 
 /* ── Synthesized Level Music ───────────────────────────────────── */
