@@ -5,7 +5,7 @@
 
 ## Must-Haves (from SPEC)
 - [x] Implement video playback component overlay.
-- [ ] Build logic to select correct video based on character and level.
+- [x] Build logic to select correct video based on character and level.
 - [ ] Implement "Level 8" villain defeat state.
 - [ ] Handle UI transitions between game, cutscenes, and next levels.
 
@@ -16,7 +16,7 @@
 **Objective**: Build a reusable Vue video component that overlays the screen, plays a given video source (placeholders), and emits an event when playback ends.
 
 ### Phase 2: Cutscene Routing & State Logic
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Objective**: Update `useMathGame.js` to track levels up to 8. Create a matching logic to route character mascot + level state to a specific video file path.
 
 ### Phase 3: Integration & Clean Up

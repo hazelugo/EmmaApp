@@ -10,6 +10,7 @@ export function useMathGame () {
   /* ── Score & Streak ─────────────────────────────────────────── */
   const stars      = ref(Number(localStorage.getItem('emma-stars')) || 0)
   const streak     = ref(Number(localStorage.getItem('emma-streak')) || 0)
+  const level      = ref(Number(localStorage.getItem('emma-level')) || 1)
   const problemKey = ref(0) // bumped on each new problem for transition animations
 
   // Track the last star count we showed a celebration for to avoid re-triggering
@@ -100,7 +101,7 @@ export function useMathGame () {
       stars.value++
       streak.value++
 
-      // Persistence
+      // persistence
       localStorage.setItem('emma-stars', stars.value)
       localStorage.setItem('emma-streak', streak.value)
 
@@ -108,6 +109,11 @@ export function useMathGame () {
       if (stars.value > 0 && stars.value % 10 === 0 && stars.value > lastMilestone.value) {
         showLevelUp.value = true
         lastMilestone.value = stars.value
+        
+        if (level.value < 8) {
+          level.value++
+          localStorage.setItem('emma-level', level.value)
+        }
       }
     } else {
       feedback.value = 'wrong'
@@ -140,6 +146,13 @@ export function useMathGame () {
     return true
   }
 
+  /* ── Cutscene Routing Logic ─────────────────────────────────── */
+  function getCutsceneVideoPath (characterId, currentLevel) {
+    // Expected future routing: return `/videos/${characterId}_level_${currentLevel}.mp4`
+    // Returns our phase 1 placeholder for testing
+    return '/videos/hero.mp4'
+  }
+
   /* ── Initialize ─────────────────────────────────────────────── */
   generateProblem()
 
@@ -147,6 +160,7 @@ export function useMathGame () {
     // State
     stars,
     streak,
+    level,
     problemKey,
     currentProblem,
     answer,
@@ -164,5 +178,6 @@ export function useMathGame () {
     clearFeedback,
     appendDigit,
     backspace,
+    getCutsceneVideoPath,
   }
 }
