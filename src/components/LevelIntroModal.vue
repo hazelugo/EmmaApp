@@ -21,6 +21,7 @@
  */
 
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
+import starSrc from '../assets/star.png'
 
 const props = defineProps({
   show:    { type: Boolean, default: false },
@@ -114,11 +115,12 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
         <!-- LET'S GO button -->
         <button
           v-if="showBtn"
-          class="lets-go-btn"
+          class="lets-go-btn flex items-center justify-center gap-3"
           @click="onStart"
           id="level-intro-start-btn"
         >
-          LET'S GO! 🌟
+          LET'S GO! 
+          <img :src="starSrc" alt="Star" class="w-6 h-6 md:w-8 md:h-8 animate-pulse drop-shadow-md" style="image-rendering: pixelated;" />
         </button>
       </div>
     </div>

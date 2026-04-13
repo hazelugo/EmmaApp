@@ -5,11 +5,14 @@ import daisyThemeMp3 from '../assets/music/daisy-theme.mp3'
 import rosalinaThemeMp3 from '../assets/music/rosalina-theme.mp3'
 import toadThemeMp3 from '../assets/music/toad-theme.mp3'
 
+import titleThemeMp3 from '../assets/music/title-theme.mp3'
+
 const CHARACTER_BGM = {
   peach: peachThemeMp3,
   daisy: daisyThemeMp3,
   rosalina: rosalinaThemeMp3,
   toad: toadThemeMp3,
+  title: titleThemeMp3,
 }
 
 /**
