@@ -140,13 +140,17 @@ function playThemeMusic(characterId) {
   currentBgmAudio.loop = true
   currentBgmAudio.volume = 1.0 // Max volume for mobile audibility
 
-  // Ensure we wait for the browser to load the audio chunk before skipping the corrupted 0:00 millisecond
-  currentBgmAudio.addEventListener('loadeddata', () => {
-    currentBgmAudio.currentTime = 0.40
-  })
-
+  // We don't skip currentTime directly because iOS requires .play() to synchronously run in the current thread stack. 
+  // Instead, we start the track fully Muted to mask the 'pop', then un-mute a few milliseconds later.
   if (!isMuted.value) {
+    currentBgmAudio.muted = true
     currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
+    
+    setTimeout(() => {
+      if (currentBgmAudio) {
+        currentBgmAudio.muted = false
+      }
+    }, 150)
   }
 }
 
