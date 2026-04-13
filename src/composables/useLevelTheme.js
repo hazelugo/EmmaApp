@@ -45,6 +45,24 @@ import winDaisyBb        from '../assets/post enemies (daisy)/5 daisy wins bb.pn
 import winDaisyBiokinton from '../assets/post enemies (daisy)/6 daisy win biokinton.png'
 import winDaisySphinx    from '../assets/post enemies (daisy)/7 daisy wins sphinx.png'
 
+/* ── ROSALINA Pre-level images ────────────────────────── */
+import rosalinaDino     from '../assets/initial enemies (rosalina)/1 rosalina v dino piranha.png'
+import rosalinaTopmaniac from '../assets/initial enemies (rosalina)/2 rosalina v topmaniac.png'
+import rosalinaKing     from '../assets/initial enemies (rosalina)/3 rosalina v king kaliente.png'
+import rosalinaBurrows  from '../assets/initial enemies (rosalina)/4 rosalina v burrows.png'
+import rosalinaBoulder  from '../assets/initial enemies (rosalina)/5 rosalina v bouldergeist.png'
+import rosalinaKamella  from '../assets/initial enemies (rosalina)/6 rosalina v kamella.png'
+import rosalinaMegaleg  from '../assets/initial enemies (rosalina)/7 rosalina v megaleg.png'
+
+/* ── ROSALINA Post-level (wins!) images ──────────────────────────── */
+import winRosalinaDino     from '../assets/post enemies (rosalina)/1 rosalina wins dino piranha.png'
+import winRosalinaTopmaniac from '../assets/post enemies (rosalina)/2 rosalina wins topmaniac.png'
+import winRosalinaKing     from '../assets/post enemies (rosalina)/3 rosalina wins king kaliente.png'
+import winRosalinaBurrows  from '../assets/post enemies (rosalina)/4 rosalina wins burrows.png'
+import winRosalinaBoulder  from '../assets/post enemies (rosalina)/5 rosalina wins bouldergeist.png'
+import winRosalinaKamella  from '../assets/post enemies (rosalina)/6 rosalina wins kamella.png'
+import winRosalinaMegaleg  from '../assets/post enemies (rosalina)/7 rosalina wins megaleg.png'
+
 const PEACH_THEMES = {
   1: {
     enemyName:    'Goomba',
@@ -191,9 +209,83 @@ const DAISY_THEMES = {
   },
 }
 
+const ROSALINA_THEMES = {
+  1: {
+    enemyName:    'Dino Piranha',
+    enemyImage:   rosalinaDino,
+    victoryImage: winRosalinaDino,
+    bg: { top: '#6dd5fa', mid: '#87ceeb', bottom: '#7ADB7E' },
+    victoryBg: { top: '#FFD700', mid: '#FFF176', bottom: '#7ADB7E' },
+    musicId:    'overworld',
+    flavorText: 'Dino Piranha hatches a plan!',
+    victoryText: 'Dino Piranha sent packing! ✨',
+  },
+  2: {
+    enemyName:    'Topmaniac',
+    enemyImage:   rosalinaTopmaniac,
+    victoryImage: winRosalinaTopmaniac,
+    bg: { top: '#a18cd1', mid: '#fbc2eb', bottom: '#c3a3e8' },
+    victoryBg: { top: '#FFD700', mid: '#f8a5c2', bottom: '#c3a3e8' },
+    musicId:    'underground',
+    flavorText: 'Topmaniac spins out of control!',
+    victoryText: 'Topmaniac stopped spinning! 🌟',
+  },
+  3: {
+    enemyName:    'King Kaliente',
+    enemyImage:   rosalinaKing,
+    victoryImage: winRosalinaKing,
+    bg: { top: '#f7971e', mid: '#ffd200', bottom: '#e8a838' },
+    victoryBg: { top: '#FFD700', mid: '#ffd200', bottom: '#f7971e' },
+    musicId:    'desert',
+    flavorText: 'King Kaliente brings the heat!',
+    victoryText: 'King Kaliente cooled down! ☄️',
+  },
+  4: {
+    enemyName:    'Major Burrows',
+    enemyImage:   rosalinaBurrows,
+    victoryImage: winRosalinaBurrows,
+    bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
+    victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
+    musicId:    'forest',
+    flavorText: 'Major Burrows digs in!',
+    victoryText: 'Major Burrows buried! 🌌',
+  },
+  5: {
+    enemyName:    'Bouldergeist',
+    enemyImage:   rosalinaBoulder,
+    victoryImage: winRosalinaBoulder,
+    bg: { top: '#0f0c29', mid: '#302b63', bottom: '#24243e' },
+    victoryBg: { top: '#FFD700', mid: '#302b63', bottom: '#24243e' },
+    musicId:    'spooky',
+    flavorText: 'Bouldergeist materializes!',
+    victoryText: 'Bouldergeist busted! 👻',
+  },
+  6: {
+    enemyName:    'Kamella',
+    enemyImage:   rosalinaKamella,
+    victoryImage: winRosalinaKamella,
+    bg: { top: '#b91c1c', mid: '#ef4444', bottom: '#7f1d1d' },
+    victoryBg: { top: '#FFD700', mid: '#ef4444', bottom: '#7f1d1d' },
+    musicId:    'castle',
+    flavorText: 'Kamella casts a spell!',
+    victoryText: 'Kamella defeated! 🪄',
+  },
+  7: {
+    enemyName:    'Megaleg',
+    enemyImage:   rosalinaMegaleg,
+    victoryImage: winRosalinaMegaleg,
+    bg: { top: '#1a0000', mid: '#7b0000', bottom: '#3d0000' },
+    victoryBg: { top: '#FFD700', mid: '#FF8C00', bottom: '#E52521' },
+    musicId:    'final',
+    flavorText: 'Megaleg stomps into view!',
+    victoryText: 'MEGALEG DEFEATED! 🏆 The cosmos is safe!',
+  },
+}
+
 export const CHARACTER_THEMES = {
   peach: PEACH_THEMES,
   daisy: DAISY_THEMES,
+  rosalina: ROSALINA_THEMES,
 }
 
 /**

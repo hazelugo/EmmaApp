@@ -26,7 +26,7 @@ const {
   appendDigit, backspace, resetGame,
 } = useMathGame()
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3 } = useSound()
+const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3, playThemeMusic, stopThemeMusic } = useSound()
 
 /* ── Level themes ───────────────────────────────────────── */
 // Theme for the INCOMING level (pre-level intro)
@@ -44,6 +44,7 @@ function onSelectCharacter(char) {
     localStorage.setItem('emma-character', char.id)
   }
   selectedCharacter.value = char
+  playThemeMusic(char.id)
   playTap()
 }
 
@@ -101,6 +102,7 @@ function closeLevelUp() {
  */
 function onVictoryNext () {
   showLevelVictory.value = false
+  playThemeMusic(selectedCharacter.value.id)
   // If there's a next level queued, show its intro; else generate a new problem
   if (completedLevel.value < 7) {
     showLevelIntro.value = true
@@ -121,7 +123,10 @@ function onLevelIntroStart () {
 
 // Watch for level up / victory to play the fanfare
 watch(showLevelVictory, (val) => {
-  if (val) playLevelUp()
+  if (val) {
+    stopThemeMusic()
+    playLevelUp()
+  }
 })
 </script>
 

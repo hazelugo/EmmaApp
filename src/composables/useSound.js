@@ -1,12 +1,24 @@
 import { ref } from 'vue'
 
+import peachThemeMp3 from '../assets/music/peach-theme.mp3'
+import daisyThemeMp3 from '../assets/music/daisy-theme.mp3'
+import rosalinaThemeMp3 from '../assets/music/rosalina-theme.mp3'
+import toadThemeMp3 from '../assets/music/toad-theme.mp3'
+
+const CHARACTER_BGM = {
+  peach: peachThemeMp3,
+  daisy: daisyThemeMp3,
+  rosalina: rosalinaThemeMp3,
+  toad: toadThemeMp3,
+}
+
 /**
  * Web Audio API-based sound effects composable.
  * Nintendo / Mario-inspired synthesized sounds.
- * No external audio files needed — all sounds are synthesized.
  */
 
 const isMuted = ref(false)
+let currentBgmAudio = null
 let audioCtx = null
 
 function getContext () {
@@ -102,6 +114,39 @@ function playLevelUp () {
 /** Toggle mute state */
 function toggleMute () {
   isMuted.value = !isMuted.value
+  if (currentBgmAudio) {
+    if (isMuted.value) {
+      currentBgmAudio.pause()
+    } else {
+      currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
+    }
+  }
+}
+
+/** Play looping background MP3 for the selected character */
+function playThemeMusic (characterId) {
+  if (currentBgmAudio) {
+    currentBgmAudio.pause()
+    currentBgmAudio = null
+  }
+  
+  const bgmSrc = CHARACTER_BGM[characterId]
+  if (!bgmSrc) return
+  
+  currentBgmAudio = new Audio(bgmSrc)
+  currentBgmAudio.loop = true
+  currentBgmAudio.volume = 0.4 // Background volume level
+  
+  if (!isMuted.value) {
+    currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
+  }
+}
+
+function stopThemeMusic () {
+  if (currentBgmAudio) {
+    currentBgmAudio.pause()
+    currentBgmAudio = null
+  }
 }
 
 /**
@@ -129,5 +174,7 @@ export function useSound () {
     playStreak,
     playLevelUp,
     playSuccessMP3,
+    playThemeMusic,
+    stopThemeMusic,
   }
 }

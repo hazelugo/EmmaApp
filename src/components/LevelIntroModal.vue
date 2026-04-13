@@ -21,7 +21,6 @@
  */
 
 import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
-import { playLevelMusic, stopLevelMusic } from '../composables/useLevelTheme.js'
 
 const props = defineProps({
   show:    { type: Boolean, default: false },
@@ -55,13 +54,9 @@ function startAnimation () {
   timers.push(setTimeout(() => { showEnemy.value = true  }, 300))
   timers.push(setTimeout(() => { showText.value  = true  }, 700))
   timers.push(setTimeout(() => { showBtn.value   = true  }, 1300))
-
-  // Level music
-  playLevelMusic(props.theme?.musicId, props.isMuted)
 }
 
 function onStart () {
-  stopLevelMusic()
   emit('start')
 }
 
@@ -69,7 +64,6 @@ watch(() => props.show, (val) => {
   if (val) startAnimation()
   else {
     clearTimers()
-    stopLevelMusic()
   }
 })
 
@@ -79,7 +73,6 @@ onMounted(() => {
 
 onUnmounted(() => {
   clearTimers()
-  stopLevelMusic()
 })
 
 /* ── Dynamic background gradient ──────────────────────────────── */
