@@ -98,46 +98,29 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
     <div
       v-if="show"
       class="intro-overlay"
-      :style="bgStyle"
+      style="background: #000;"
     >
-      <!-- Twinkling background stars -->
-      <span
-        v-for="s in stars"
-        :key="s.id"
-        class="intro-star"
-        :style="{ left: s.left, top: s.top, fontSize: s.size, animationDelay: s.delay }"
-      >✦</span>
+      <!-- Background Image (FullScreen) -->
+      <img
+        v-if="theme?.enemyImage"
+        :src="theme?.enemyImage"
+        :alt="theme?.enemyName"
+        class="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
+        :class="{ 'opacity-100': showEnemy, 'opacity-0': !showEnemy }"
+      />
 
-      <!-- Level badge pill -->
-      <div class="level-badge" :class="{ 'badge-in': ready }">
-        LEVEL {{ level }}
+      <!-- Content overly at bottom -->
+      <div class="relative z-10 flex flex-col items-center justify-end h-full w-full pb-20 md:pb-32">
+        <!-- LET'S GO button -->
+        <button
+          v-if="showBtn"
+          class="lets-go-btn"
+          @click="onStart"
+          id="level-intro-start-btn"
+        >
+          LET'S GO! 🌟
+        </button>
       </div>
-
-      <!-- Enemy artwork (big, centered) -->
-      <div class="enemy-art-wrap" :class="{ 'enemy-in': showEnemy }">
-        <img
-          :src="theme?.enemyImage"
-          :alt="theme?.enemyName"
-          class="enemy-img"
-        />
-      </div>
-
-      <!-- Text block -->
-      <div class="text-block" :class="{ 'text-in': showText }">
-        <p class="vs-text">⚔️ VS ⚔️</p>
-        <h2 class="enemy-name">{{ theme?.enemyName }}</h2>
-        <p class="flavor-text">{{ theme?.flavorText }}</p>
-      </div>
-
-      <!-- LET'S GO button -->
-      <button
-        v-if="showBtn"
-        class="lets-go-btn"
-        @click="onStart"
-        id="level-intro-start-btn"
-      >
-        LET'S GO! 🌟
-      </button>
     </div>
   </Transition>
 </template>

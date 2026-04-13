@@ -113,47 +113,29 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
     <div
       v-if="show"
       class="victory-overlay"
-      :style="bgStyle"
+      style="background: #000;"
     >
-      <!-- Twinkling stars -->
-      <span
-        v-for="s in stars"
-        :key="s.id"
-        class="victory-star"
-        :style="{ left: s.left, top: s.top, fontSize: s.size, animationDelay: s.delay }"
-      >✦</span>
+      <!-- Background Image (FullScreen) -->
+      <img
+        v-if="theme?.victoryImage"
+        :src="theme?.victoryImage"
+        :alt="`Level ${level} Clear`"
+        class="absolute inset-0 w-full h-full object-cover z-0 transition-opacity duration-1000"
+        :class="{ 'opacity-100': showArt, 'opacity-0': !showArt }"
+      />
 
-      <!-- Victory badge -->
-      <div class="victory-badge">
-        {{ isFinalLevel ? '🏆 GAME CLEAR! 🏆' : `WORLD ${level} CLEAR!` }}
+      <!-- Content overly at bottom -->
+      <div class="relative z-10 flex flex-col items-center justify-end h-full w-full pb-20 md:pb-32">
+        <!-- Next World / Play Again button -->
+        <button
+          v-if="showBtn"
+          class="next-btn"
+          id="victory-next-btn"
+          @click="emit('next')"
+        >
+          {{ isFinalLevel ? 'PLAY AGAIN! 🎮' : 'NEXT WORLD →' }}
+        </button>
       </div>
-
-      <!-- Peach wins artwork -->
-      <div class="art-wrap" :class="{ 'art-in': showArt }">
-        <img
-          :src="theme?.victoryImage"
-          :alt="`Peach beats ${theme?.enemyName}`"
-          class="victory-img"
-        />
-      </div>
-
-      <!-- Victory text -->
-      <div class="text-block" :class="{ 'text-in': showText }">
-        <h2 class="victory-title">
-          {{ isFinalLevel ? 'PEACH WINS! 🌟' : 'LEVEL CLEAR! ⭐' }}
-        </h2>
-        <p class="victory-sub">{{ theme?.victoryText }}</p>
-      </div>
-
-      <!-- Next World / Play Again button -->
-      <button
-        v-if="showBtn"
-        class="next-btn"
-        id="victory-next-btn"
-        @click="emit('next')"
-      >
-        {{ isFinalLevel ? 'PLAY AGAIN! 🎮' : 'NEXT WORLD →' }}
-      </button>
     </div>
   </Transition>
 </template>
