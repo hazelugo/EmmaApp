@@ -135,7 +135,7 @@ function playThemeMusic (characterId) {
   
   currentBgmAudio = new Audio(bgmSrc)
   currentBgmAudio.loop = true
-  currentBgmAudio.volume = 0.4 // Background volume level
+  currentBgmAudio.volume = 1.0 // Max volume for mobile audibility
   
   if (!isMuted.value) {
     currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))

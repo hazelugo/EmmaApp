@@ -6,6 +6,7 @@ defineProps({
   answer:     { type: String, default: '' },
   feedback:   { type: String, default: '' },
   problemKey: { type: Number, default: 0 },
+  character:  { type: Object, required: true },
 })
 </script>
 
@@ -22,8 +23,49 @@ defineProps({
   >
     <!-- Question Block "?" decoration at top removed per feedback -->
 
+    <!-- Character Mascot (moved from MascotPanel so it shows on mobile) -->
+    <div class="relative flex items-center justify-center mb-4 md:mb-6">
+      <div 
+        class="absolute w-20 h-20 md:w-32 md:h-32 rounded-full blur-md"
+        :class="character.bg"
+      ></div>
+      <img
+        v-if="character.src"
+        :src="character.src"
+        :alt="character.name"
+        class="relative w-24 md:w-36 animate-float drop-shadow-xl z-20"
+        style="image-rendering: pixelated;"
+        :class="{
+          'scale-110 transition-transform duration-300 rainbow-shimmer': feedback === 'correct',
+          'shake': feedback === 'wrong',
+        }"
+      />
+      <div 
+        v-else 
+        class="relative text-[4rem] md:text-[8rem] filter drop-shadow-md animate-float z-20"
+        :class="{
+          'scale-110 transition-transform duration-300': feedback === 'correct',
+          'shake': feedback === 'wrong',
+        }"
+      >
+        {{ character.emoji }}
+      </div>
+      
+      <!-- Speech Bubble -->
+      <div
+        v-if="feedback"
+        class="absolute -top-6 -right-6 md:-top-4 md:-right-16 z-30 rounded-xl px-3 py-1 md:py-2 text-center text-xs md:text-base font-bold block-border shadow-lg"
+        :class="{
+          'bg-star-gold text-dark': feedback === 'correct',
+          'bg-mario-red text-white': feedback === 'wrong',
+        }"
+      >
+        {{ feedback === 'correct' ? 'Wahoo! ⭐' : 'Try again! 🍄' }}
+      </div>
+    </div>
+
     <!-- Problem display — pop-in on new problem -->
-    <div class="flex items-center gap-3 text-center pop-in" :key="problemKey">
+    <div class="flex items-center gap-2 md:gap-3 text-center pop-in" :key="problemKey">
       <!-- First Number -->
       <span class="text-6xl md:text-7xl font-extrabold text-dark drop-shadow-lg">
         {{ num1 }}
@@ -72,16 +114,5 @@ defineProps({
       </div>
     </div>
 
-    <!-- Mobile-only feedback -->
-    <p
-      v-if="feedback"
-      class="sm:hidden mt-4 text-2xl font-bold"
-      :class="{
-        'text-luigi': feedback === 'correct',
-        'text-mario-red': feedback === 'wrong',
-      }"
-    >
-      {{ feedback === 'correct' ? '⭐ Wahoo!' : '🍄 Try again!' }}
-    </p>
   </section>
 </template>

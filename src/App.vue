@@ -1,6 +1,5 @@
 <script setup>
 import ScoreHeader      from './components/ScoreHeader.vue'
-import MascotPanel      from './components/MascotPanel.vue'
 import ChallengeZone    from './components/ChallengeZone.vue'
 import NumberPad        from './components/NumberPad.vue'
 import LevelUpModal     from './components/LevelUpModal.vue'
@@ -179,19 +178,18 @@ watch(showLevelVictory, (val) => {
       @toggle-mute="toggleMute"
     />
 
-    <!-- Middle: Mascot + Challenge -->
+    <!-- Middle: Challenge -->
     <div class="flex flex-1 gap-3 items-stretch min-h-0">
-      <!-- Mascot (left) -->
-      <MascotPanel v-if="selectedCharacter" :feedback="feedback" :character="selectedCharacter" />
-
       <!-- Challenge Zone (centre) -->
       <ChallengeZone
+        v-if="selectedCharacter"
         :num1="currentProblem.a"
         :num2="currentProblem.b"
         :operator="currentProblem.operator"
         :answer="answer"
         :feedback="feedback"
         :problem-key="problemKey"
+        :character="selectedCharacter"
       />
     </div>
 
