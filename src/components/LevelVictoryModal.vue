@@ -273,6 +273,7 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
 
 /* ── Next World button ────────────────────────────────────────── */
 .next-btn {
+  opacity: 0.6;
   margin-top: 8px;
   padding: 15px 44px;
   font-family: inherit;
@@ -296,7 +297,7 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
 }
 @keyframes btn-appear {
   0%   { transform: scale(0.4) translateY(30px); opacity: 0; }
-  100% { transform: scale(1)   translateY(0);    opacity: 1; }
+  100% { transform: scale(1)   translateY(0);    opacity: 0.6; }
 }
 .next-btn:hover {
   transform: scale(1.07) translateY(-2px);
