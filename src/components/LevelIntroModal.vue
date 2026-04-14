@@ -157,7 +157,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
 }
 @keyframes twinkle {
-  0%   { opacity: 0.2; transform: scale(0.7); }
+  0%   { opacity: 0.8; transform: scale(0.7); }
   100% { opacity: 1;   transform: scale(1.3); }
 }
 
@@ -270,7 +270,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
 
 /* ── LET'S GO button ────────────────────────────────────────── */
 .lets-go-btn {
-  opacity: 0.6;
+  opacity: 0.8;
   margin-top: 8px;
   padding: 15px 44px;
   font-family: inherit;
@@ -294,7 +294,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
 }
 @keyframes btn-appear {
   0%   { transform: scale(0.4) translateY(30px); opacity: 0; }
-  100% { transform: scale(1) translateY(0);       opacity: 0.6; }
+  100% { transform: scale(1) translateY(0);       opacity: 0.8; }
 }
 .lets-go-btn:hover {
   transform: scale(1.07) translateY(-2px);

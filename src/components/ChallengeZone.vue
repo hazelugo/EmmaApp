@@ -36,7 +36,7 @@ defineProps({
         class="relative w-24 md:w-36 animate-float drop-shadow-xl z-20"
         style="image-rendering: pixelated;"
         :class="{
-          'scale-110 transition-transform duration-300 rainbow-shimmer': feedback === 'correct',
+          'scale-110 transition-transform duration-300': feedback === 'correct',
           'shake': feedback === 'wrong',
         }"
       />
@@ -49,18 +49,6 @@ defineProps({
         }"
       >
         {{ character.emoji }}
-      </div>
-      
-      <!-- Speech Bubble -->
-      <div
-        v-if="feedback"
-        class="absolute -top-6 -right-6 md:-top-4 md:-right-16 z-30 rounded-xl px-3 py-1 md:py-2 text-center text-xs md:text-base font-bold block-border shadow-lg"
-        :class="{
-          'bg-star-gold text-dark': feedback === 'correct',
-          'bg-mario-red text-white': feedback === 'wrong',
-        }"
-      >
-        {{ feedback === 'correct' ? 'Wahoo! ⭐' : 'Try again! 🍄' }}
       </div>
     </div>
 
