@@ -70,7 +70,7 @@ function selectCharacter(char) {
       class="absolute inset-0 flex flex-col items-center justify-center cursor-pointer bg-sky z-50 transition-opacity duration-500 text-center px-4"
       @click="startApp"
     >
-      <div class="text-7xl md:text-[8rem] font-black drop-shadow-[0_8px_8px_rgba(0,0,0,0.5)] mb-12 animate-float leading-tight" style="-webkit-text-stroke: 1.5px black;">
+      <div class="text-7xl md:text-9xl font-black drop-shadow-[0_8px_8px_rgba(0,0,0,0.5)] mb-12 animate-float leading-tight" style="-webkit-text-stroke: 1.5px black;">
         <span style="color: #E52521">S</span><span style="color: #4384F4">U</span><span style="color: #FFD700">P</span><span style="color: #4CAF50">E</span><span style="color: #E52521">R</span>
         <br/>
         <span style="color: #4CAF50">M</span><span style="color: #FFD700">A</span><span style="color: #4384F4">T</span><span style="color: #E52521">H</span>
@@ -93,7 +93,7 @@ function selectCharacter(char) {
         <span class="hidden md:inline">&nbsp;</span>
         <span style="color: #4384F4">E</span><span style="color: #E52521">m</span><span style="color: #4CAF50">m</span><span style="color: #FFD700">a</span><span style="color: #E52521">!</span>
       </div>
-      <p class="text-lg md:text-xl font-bold text-dark text-center mb-8">
+      <p class="text-lg md:text-xl font-medium text-dark text-center mb-8">
         Choose your player!
       </p>
 

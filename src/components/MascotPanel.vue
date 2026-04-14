@@ -30,7 +30,7 @@ defineProps({
       <!-- Emoji Fallback if no sprite image available -->
       <div 
         v-else 
-        class="relative text-[6rem] md:text-[8rem] filter drop-shadow-md animate-float z-20"
+        class="relative text-8xl md:text-9xl filter drop-shadow-md animate-float z-20"
         :class="{
           'scale-110 transition-transform duration-300': feedback === 'correct',
           'shake': feedback === 'wrong',
