@@ -1,0 +1,12 @@
+WORLD BACKGROUND ASSETS
+
+Place the following PNG files in this directory:
+- world-1-grassland.png
+- world-2-desert.png
+- world-3-ice.png
+- world-4-lava.png
+- world-5-castle.png
+- world-6-space.png
+
+These are full-screen backgrounds for the themed worlds in Story-Driven Progression.
+Recommended size: 1280x720px or larger (will be scaled responsively)

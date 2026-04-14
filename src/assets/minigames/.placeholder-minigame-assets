@@ -1,0 +1,12 @@
+MINI-GAME ASSETS
+
+Place the following PNG files in this directory:
+- minigame-dash-icon.png (icon for Math Dash mini-game)
+- minigame-match-icon.png (icon for Shape Match mini-game)
+- falling-number.png (sprite for falling numbers in dash game)
+- shape-icons.png (sprite sheet with circle, square, triangle icons)
+
+These assets support the Mini-Games & Variety Breaks feature.
+Recommended:
+  - Icons: 128x128px
+  - Sprites: 64x64px (or larger if sprite sheet)

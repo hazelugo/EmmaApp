@@ -1,0 +1,18 @@
+PROGRESS VISUALIZATION (MATH MAP) ASSETS
+
+Place the following PNG files in this directory:
+MAP TILES:
+- map-tile-Forest.png (world 1 tile)
+- map-tile-Desert.png (world 2 tile)
+- map-tile-Ice.png (world 3 tile)
+- map-tile-Volcano.png (world 4 tile)
+- map-tile-Castle.png (world 5 tile)
+- map-tile-Space.png (world 6 tile)
+
+CONNECTORS & MARKERS:
+- map-path-connector.png (lines/paths connecting tiles)
+- map-character-marker.png (icon showing player position)
+- achievement-star-icon.png (star for unlocked achievements)
+
+These assets support the Progress Visualization feature showing a "Math Map" with unlocked worlds.
+Recommended size: 128x128px for tiles, 64x64px for markers
