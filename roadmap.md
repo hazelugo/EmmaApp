@@ -48,5 +48,5 @@
 - [ ] **Mini-Games & Variety Breaks**: Quick action games (Math Dash, Shape Match) between problem sets for engagement.
 - [ ] **Personalized Mascot Interactions**: Dynamic mascot reactions, voice lines, and speech bubbles based on performance.
 - [ ] **Reward System & Collectibles**: Math badges, treasure chests, and a 'Math Museum' for earned items.
-- [ ] **Sound - [ ] **Social & Sharing Features**: Challenge friends, share progress screenshots, and family sharing modes. Haptic Enhancements**: More audio feedback, mascot voices, background music, sound effects, and device vibration.
+- [ ] **Sound & Haptic Enhancements**: More audio feedback, mascot voices, background music, sound effects, and device vibration.
 - [ ] **Progress Visualization**: 'Math Map' showing unlocked areas, progress bars, and achievement trees.
