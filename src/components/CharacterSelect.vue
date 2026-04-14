@@ -1,7 +1,15 @@
 <script setup>
 import { ref } from 'vue'
+import { useSound } from '../composables/useSound.js'
 
 const emit = defineEmits(['select'])
+const { playThemeMusic, playTap } = useSound()
+
+const started = ref(false)
+function startApp() {
+  started.value = true
+  playThemeMusic('title')
+}
 
 import peachSrc from '../assets/mascot.png'
 import daisySrc from '../assets/daisy.png'
@@ -55,13 +63,38 @@ function selectCharacter(char) {
 
 <template>
   <div class="fixed inset-0 z-[200] bg-sky flex justify-center items-center p-4">
-    <div class="max-w-2xl w-full bg-mushroom-white block-border rounded-3xl p-8 flex flex-col items-center">
+    
+    <!-- Title Screen overlay -->
+    <div 
+      v-if="!started" 
+      class="absolute inset-0 flex flex-col items-center justify-center cursor-pointer bg-sky z-50 transition-opacity duration-500 text-center px-4"
+      @click="startApp"
+    >
+      <div class="text-7xl md:text-[8rem] font-black drop-shadow-[0_8px_8px_rgba(0,0,0,0.5)] mb-12 animate-float leading-tight" style="-webkit-text-stroke: 1.5px black;">
+        <span style="color: #E52521">S</span><span style="color: #4384F4">U</span><span style="color: #FFD700">P</span><span style="color: #4CAF50">E</span><span style="color: #E52521">R</span>
+        <br/>
+        <span style="color: #4CAF50">M</span><span style="color: #FFD700">A</span><span style="color: #4384F4">T</span><span style="color: #E52521">H</span>
+        <br/>
+        <span style="color: #E52521">W</span><span style="color: #4384F4">O</span><span style="color: #FFD700">R</span><span style="color: #4CAF50">L</span><span style="color: #E52521">D</span>
+      </div>
+      <p class="text-2xl md:text-4xl font-bold text-dark animate-pulse bg-mushroom-white/80 px-8 py-4 rounded-full border-4 border-dark/20 shadow-lg">
+        Tap to Start!
+      </p>
+    </div>
+
+    <div 
+      class="max-w-2xl w-full bg-mushroom-white block-border rounded-3xl p-8 flex flex-col items-center transition-all duration-700 transform"
+      :class="{ 'opacity-0 scale-90 blur-sm pointer-events-none': !started, 'opacity-100 scale-100 blur-0': started }"
+    >
       
-      <h1 class="text-3xl md:text-5xl font-extrabold text-mario-red drop-shadow-md text-center mb-2">
-        Choose Your Player!
-      </h1>
+      <div class="text-4xl md:text-6xl font-black drop-shadow-[0_6px_6px_rgba(0,0,0,0.5)] text-center mb-2 leading-tight" style="-webkit-text-stroke: 1px black;">
+        <span style="color: #E52521">W</span><span style="color: #4CAF50">e</span><span style="color: #FFD700">l</span><span style="color: #4384F4">c</span><span style="color: #E52521">o</span><span style="color: #4CAF50">m</span><span style="color: #FFD700">e</span>
+        <br class="md:hidden" />
+        <span class="hidden md:inline">&nbsp;</span>
+        <span style="color: #4384F4">E</span><span style="color: #E52521">m</span><span style="color: #4CAF50">m</span><span style="color: #FFD700">a</span><span style="color: #E52521">!</span>
+      </div>
       <p class="text-lg md:text-xl font-bold text-dark text-center mb-8">
-        Who will Emma play as today?
+        Choose your player!
       </p>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full">

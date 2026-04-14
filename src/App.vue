@@ -1,34 +1,49 @@
 <script setup>
-import ScoreHeader   from './components/ScoreHeader.vue'
-import MascotPanel   from './components/MascotPanel.vue'
-import ChallengeZone from './components/ChallengeZone.vue'
-import NumberPad     from './components/NumberPad.vue'
-import LevelUpModal  from './components/LevelUpModal.vue'
-import CharacterSelect from './components/CharacterSelect.vue'
+import ScoreHeader      from './components/ScoreHeader.vue'
+import ChallengeZone    from './components/ChallengeZone.vue'
+import NumberPad        from './components/NumberPad.vue'
+import LevelUpModal     from './components/LevelUpModal.vue'
+import CharacterSelect  from './components/CharacterSelect.vue'
+import LevelIntroModal  from './components/LevelIntroModal.vue'
+import LevelVictoryModal from './components/LevelVictoryModal.vue'
 
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import confetti from 'canvas-confetti'
 
-import { useMathGame } from './composables/useMathGame.js'
-import { useSound }    from './composables/useSound.js'
+import { useMathGame }   from './composables/useMathGame.js'
+import { useSound }      from './composables/useSound.js'
+import { getLevelTheme } from './composables/useLevelTheme.js'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
   stars, streak, problemKey,
   currentProblem, answer, feedback,
-  showLevelUp,
+  difficulty, showLevelUp,
+  showLevelVictory, completedLevel,
+  showLevelIntro, pendingLevel,
   generateProblem, checkAnswer, clearFeedback,
-  appendDigit, backspace,
+  appendDigit, backspace, resetGame,
 } = useMathGame()
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp } = useSound()
+const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+
+/* ── Level themes ─────────────────────────────────────────────── */
+// Theme for the INCOMING level (pre-level intro)
+const currentTheme = computed(() => getLevelTheme(pendingLevel.value, selectedCharacter.value?.id))
+// Theme for the level that was JUST beaten (victory screen)
+const victoryTheme = computed(() => getLevelTheme(completedLevel.value, selectedCharacter.value?.id))
 
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
 
-function onSelectCharacter(char) {
+function onSelectCharacter (char) {
+  const prevChar = localStorage.getItem('emma-character')
+  if (prevChar !== char.id) {
+    resetGame()
+    localStorage.setItem('emma-character', char.id)
+  }
   selectedCharacter.value = char
-  playTap()
+  playThemeMusic(char.id)
 }
 
 /* ── Number Pad Handlers ──────────────────────────────────────── */
@@ -61,7 +76,8 @@ function onSubmit () {
     }
 
     setTimeout(() => {
-      if (!showLevelUp.value) generateProblem()
+      // Don't generate next problem while victory, intro, or level-up screens are showing
+      if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value) generateProblem()
     }, 1400)
   } else {
     playWrong()
@@ -69,14 +85,41 @@ function onSubmit () {
   }
 }
 
-function closeLevelUp() {
+function closeLevelUp () {
   showLevelUp.value = false
+  if (!showLevelIntro.value && !showLevelVictory.value) generateProblem()
+}
+
+/**
+ * Player tapped "NEXT WORLD" on the victory screen.
+ * Hide victory, then show the pre-level intro for the new level.
+ * If we're on level 7 (Bowser beaten), no next intro — just keep playing.
+ */
+function onVictoryNext () {
+  showLevelVictory.value = false
+  playThemeMusic(selectedCharacter.value.id)
+  if (completedLevel.value < 7) {
+    showLevelIntro.value = true
+  } else {
+    generateProblem()
+  }
+}
+
+/**
+ * Player tapped "LET'S GO!" — hide the level intro and start playing.
+ */
+function onLevelIntroStart () {
+  showLevelIntro.value = false
+  showLevelUp.value    = false
   generateProblem()
 }
 
-// Watch for level up to play the fanfare
-watch(showLevelUp, (val) => {
-  if (val) playLevelUp()
+// Watch for victory to stop music and play fanfare
+watch(showLevelVictory, (val) => {
+  if (val) {
+    stopThemeMusic()
+    playLevelUp()
+  }
 })
 </script>
 
@@ -87,18 +130,36 @@ watch(showLevelUp, (val) => {
   >
     <!-- Character Select Overlay -->
     <Transition name="fade">
-      <CharacterSelect 
-        v-if="!selectedCharacter" 
-        @select="onSelectCharacter" 
+      <CharacterSelect
+        v-if="!selectedCharacter"
+        @select="onSelectCharacter"
       />
     </Transition>
 
-    <!-- Level Up Modal overlay -->
-    <LevelUpModal 
+    <!-- Level Victory — shows after each level is beaten -->
+    <LevelVictoryModal
+      v-if="selectedCharacter"
+      :show="showLevelVictory"
+      :level="completedLevel"
+      :theme="victoryTheme"
+      @next="onVictoryNext"
+    />
 
-      :show="showLevelUp" 
-      :stars="stars" 
-      @close="closeLevelUp" 
+    <!-- Level Intro — shows before each level with enemy reveal -->
+    <LevelIntroModal
+      v-if="selectedCharacter"
+      :show="showLevelIntro"
+      :level="pendingLevel"
+      :theme="currentTheme"
+      :is-muted="isMuted"
+      @start="onLevelIntroStart"
+    />
+
+    <!-- Level Up Modal overlay -->
+    <LevelUpModal
+      :show="showLevelUp"
+      :stars="stars"
+      @close="closeLevelUp"
     />
 
     <!-- ★ Score Header -->
@@ -109,19 +170,17 @@ watch(showLevelUp, (val) => {
       @toggle-mute="toggleMute"
     />
 
-    <!-- Middle: Mascot + Challenge -->
+    <!-- Middle: Challenge -->
     <div class="flex flex-1 gap-3 items-stretch min-h-0">
-      <!-- Mascot (left) -->
-      <MascotPanel v-if="selectedCharacter" :feedback="feedback" :character="selectedCharacter" />
-
-      <!-- Challenge Zone (centre) -->
       <ChallengeZone
+        v-if="selectedCharacter"
         :num1="currentProblem.a"
         :num2="currentProblem.b"
         :operator="currentProblem.operator"
         :answer="answer"
         :feedback="feedback"
         :problem-key="problemKey"
+        :character="selectedCharacter"
       />
     </div>
 

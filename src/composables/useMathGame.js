@@ -4,7 +4,7 @@ import { ref, computed, reactive } from 'vue'
  * Core math game composable.
  *
  * Manages problem generation, answer checking, scoring,
- * streak tracking, and adaptive difficulty.
+ * streak tracking, adaptive difficulty, and level progression.
  */
 
 function getStorage (key, fallback) {
@@ -28,11 +28,18 @@ export function useMathGame () {
   /* ── Score & Streak ─────────────────────────────────────────── */
   const stars      = ref(getStorage('emma-stars', 0))
   const streak     = ref(getStorage('emma-streak', 0))
+  const level      = ref(getStorage('emma-level', 1))
   const problemKey = ref(0) // bumped on each new problem for transition animations
 
   // Track the last star count we showed a celebration for to avoid re-triggering
-  const lastMilestone = ref(getStorage('emma-lastMilestone', Math.floor(stars.value / 10) * 10))
-  const showLevelUp   = ref(false)
+  const lastMilestone    = ref(getStorage('emma-lastMilestone', Math.floor(stars.value / 10) * 10))
+  const showLevelUp      = ref(false)
+  // Post-level victory screen (Peach wins image)
+  const showLevelVictory = ref(false)
+  const completedLevel   = ref(level.value) // which level was just beaten
+  // Pre-level intro screen (enemy reveal)
+  const showLevelIntro   = ref(false)
+  const pendingLevel     = ref(level.value) // which level the intro is showing for
 
   /* ── Current Problem ────────────────────────────────────────── */
   const currentProblem = reactive({
@@ -126,9 +133,20 @@ export function useMathGame () {
 
       // Milestone check: every 10 stars (10, 20, 30...)
       if (stars.value > 0 && stars.value % 10 === 0 && stars.value > lastMilestone.value) {
-        showLevelUp.value = true
         lastMilestone.value = stars.value
         setStorage('emma-lastMilestone', lastMilestone.value)
+
+        // Capture the level that was just beaten, then show victory screen
+        completedLevel.value   = level.value
+        showLevelVictory.value = true
+
+        // Advance to the next level (capped at 7)
+        if (level.value < 7) {
+          level.value++
+          setStorage('emma-level', level.value)
+          // Queue the pre-level intro for when the player dismisses victory
+          pendingLevel.value = level.value
+        }
       }
     } else {
       feedback.value = 'wrong'
@@ -161,19 +179,56 @@ export function useMathGame () {
     return true
   }
 
+  /* ── Cutscene Routing Logic ─────────────────────────────────── */
+  function getCutsceneVideoPath (characterId, currentLevel) {
+    // Expected future routing: return `/videos/${characterId}_level_${currentLevel}.mp4`
+    // Returns our phase 1 placeholder for testing
+    return '/videos/hero.mp4'
+  }
+
+  /* ── Reset Logic ────────────────────────────────────────────── */
+  function resetGame () {
+    stars.value          = 0
+    streak.value         = 0
+    level.value          = 1
+    pendingLevel.value   = 1
+    completedLevel.value = 1
+    lastMilestone.value  = 0
+    showLevelUp.value    = false
+    showLevelVictory.value = false
+    showLevelIntro.value = true
+    difficulty.maxOperand = 5
+    difficulty.history    = []
+
+    setStorage('emma-stars', 0)
+    setStorage('emma-streak', 0)
+    setStorage('emma-level', 1)
+    setStorage('emma-lastMilestone', 0)
+    setStorage('emma-maxOperand', 5)
+
+    generateProblem()
+  }
+
   /* ── Initialize ─────────────────────────────────────────────── */
   generateProblem()
+  // Show the intro for the current level on first load
+  showLevelIntro.value = true
 
   return {
     // State
     stars,
     streak,
+    level,
     problemKey,
     currentProblem,
     answer,
     feedback,
     correctAnswer,
     showLevelUp,
+    showLevelVictory,
+    completedLevel,
+    showLevelIntro,
+    pendingLevel,
 
     // Difficulty info
     difficulty,
@@ -185,5 +240,7 @@ export function useMathGame () {
     clearFeedback,
     appendDigit,
     backspace,
+    getCutsceneVideoPath,
+    resetGame,
   }
 }
