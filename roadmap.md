@@ -42,3 +42,11 @@
 ### Phase 3: Visual Polish
 - [ ] **Themed Backgrounds**: Change background based on current difficulty or streak (e.g., Forest -> Cave -> Nether).
 - [ ] **More Mascots**: Unlock different animals or characters.
+
+### Phase 4: Engagement Enhancements
+- [ ] **Story-Driven Progression**: Turn levels into a 'Super Math Quest' with world exploration, cutscenes, and power-ups.
+- [ ] **Mini-Games & Variety Breaks**: Quick action games (Math Dash, Shape Match) between problem sets for engagement.
+- [ ] **Personalized Mascot Interactions**: Dynamic mascot reactions, voice lines, and speech bubbles based on performance.
+- [ ] **Reward System & Collectibles**: Math badges, treasure chests, and a 'Math Museum' for earned items.
+- [ ] **Sound - [ ] **Social & Sharing Features**: Challenge friends, share progress screenshots, and family sharing modes. Haptic Enhancements**: More audio feedback, mascot voices, background music, sound effects, and device vibration.
+- [ ] **Progress Visualization**: 'Math Map' showing unlocked areas, progress bars, and achievement trees.
