@@ -2,6 +2,7 @@ REWARD SYSTEM & COLLECTIBLES ASSETS
 
 Place the following PNG files in this directory:
 BADGES:
+
 - badge-gold.png (gold badge template)
 - badge-silver.png (silver badge template)
 - badge-bronze.png (bronze badge template)
@@ -10,10 +11,12 @@ BADGES:
 - icon-streak-badge.png (achievement icon: streak milestone)
 
 TREASURES:
+
 - treasure-chest-closed.png (unopened chest icon)
 - treasure-chest-open.png (open chest with shine)
 
 MUSEUM:
+
 - math-museum-bg.png (gallery background for collectibles)
 
 These assets support the Reward System & Collectibles feature for the "Math Museum" screen.

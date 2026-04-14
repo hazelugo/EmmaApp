@@ -2,6 +2,7 @@ PROGRESS VISUALIZATION (MATH MAP) ASSETS
 
 Place the following PNG files in this directory:
 MAP TILES:
+
 - map-tile-Forest.png (world 1 tile)
 - map-tile-Desert.png (world 2 tile)
 - map-tile-Ice.png (world 3 tile)
@@ -10,6 +11,7 @@ MAP TILES:
 - map-tile-Space.png (world 6 tile)
 
 CONNECTORS & MARKERS:
+
 - map-path-connector.png (lines/paths connecting tiles)
 - map-character-marker.png (icon showing player position)
 - achievement-star-icon.png (star for unlocked achievements)
