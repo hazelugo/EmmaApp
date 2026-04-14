@@ -3,11 +3,9 @@ import marioCoinSrc from '../assets/mario-coin.png'
 import starSrc from '../assets/star.png'
 
 defineProps({
-  stars:      { type: Number, default: 0 },
-  streak:     { type: Number, default: 0 },
-  isMuted:    { type: Boolean, default: false },
-  maxOperand: { type: Number, default: 5 },
-  character:  { type: Object, default: () => ({}) },
+  stars:   { type: Number, default: 0 },
+  streak:  { type: Number, default: 0 },
+  isMuted: { type: Boolean, default: false },
 })
 
 defineEmits(['toggle-mute'])

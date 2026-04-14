@@ -6,14 +6,32 @@ import { ref, computed, reactive } from 'vue'
  * Manages problem generation, answer checking, scoring,
  * streak tracking, and adaptive difficulty.
  */
+
+function getStorage (key, fallback) {
+  try {
+    const val = localStorage.getItem(key)
+    return val !== null ? Number(val) : fallback
+  } catch {
+    return fallback
+  }
+}
+
+function setStorage (key, value) {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // localStorage unavailable (private browsing, quota exceeded)
+  }
+}
+
 export function useMathGame () {
   /* ── Score & Streak ─────────────────────────────────────────── */
-  const stars      = ref(Number(localStorage.getItem('emma-stars')) || 0)
-  const streak     = ref(Number(localStorage.getItem('emma-streak')) || 0)
+  const stars      = ref(getStorage('emma-stars', 0))
+  const streak     = ref(getStorage('emma-streak', 0))
   const problemKey = ref(0) // bumped on each new problem for transition animations
 
   // Track the last star count we showed a celebration for to avoid re-triggering
-  const lastMilestone = ref(Math.floor(stars.value / 10) * 10)
+  const lastMilestone = ref(getStorage('emma-lastMilestone', Math.floor(stars.value / 10) * 10))
   const showLevelUp   = ref(false)
 
   /* ── Current Problem ────────────────────────────────────────── */
@@ -28,7 +46,7 @@ export function useMathGame () {
 
   /* ── Adaptive Difficulty ────────────────────────────────────── */
   const difficulty = reactive({
-    maxOperand:  5,       // start easy (Kindergarten level)
+    maxOperand:  getStorage('emma-maxOperand', 5),
     history:     [],      // rolling window of true/false results
     historySize: 10,
   })
@@ -45,8 +63,10 @@ export function useMathGame () {
 
     if (successRate.value >= 0.9 && difficulty.maxOperand < 20) {
       difficulty.maxOperand = Math.min(difficulty.maxOperand + 1, 20)
+      setStorage('emma-maxOperand', difficulty.maxOperand)
     } else if (successRate.value < 0.6 && difficulty.maxOperand > 3) {
       difficulty.maxOperand = Math.max(difficulty.maxOperand - 1, 3)
+      setStorage('emma-maxOperand', difficulty.maxOperand)
     }
   }
 
@@ -101,19 +121,20 @@ export function useMathGame () {
       streak.value++
 
       // Persistence
-      localStorage.setItem('emma-stars', stars.value)
-      localStorage.setItem('emma-streak', streak.value)
+      setStorage('emma-stars', stars.value)
+      setStorage('emma-streak', streak.value)
 
       // Milestone check: every 10 stars (10, 20, 30...)
       if (stars.value > 0 && stars.value % 10 === 0 && stars.value > lastMilestone.value) {
         showLevelUp.value = true
         lastMilestone.value = stars.value
+        setStorage('emma-lastMilestone', lastMilestone.value)
       }
     } else {
       feedback.value = 'wrong'
       // Pause/reset streak as requested
       streak.value = 0
-      localStorage.setItem('emma-streak', streak.value)
+      setStorage('emma-streak', streak.value)
     }
 
     adjustDifficulty()

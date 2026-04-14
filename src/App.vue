@@ -6,22 +6,22 @@ import NumberPad     from './components/NumberPad.vue'
 import LevelUpModal  from './components/LevelUpModal.vue'
 import CharacterSelect from './components/CharacterSelect.vue'
 
+import { ref, watch } from 'vue'
+import confetti from 'canvas-confetti'
+
 import { useMathGame } from './composables/useMathGame.js'
 import { useSound }    from './composables/useSound.js'
-
-import { ref } from 'vue'
-import confetti from 'canvas-confetti'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
   stars, streak, problemKey,
   currentProblem, answer, feedback,
-  difficulty, showLevelUp,
+  showLevelUp,
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace,
 } = useMathGame()
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3 } = useSound()
+const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp } = useSound()
 
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
@@ -45,10 +45,8 @@ function onSubmit () {
   if (!result) return
 
   if (result === 'correct') {
-    // Canvas-Confetti Trigger
-    // Mario-themed confetti burst
     confetti({
-      particleCount: 100,
+      particleCount: 40,
       spread: 70,
       origin: { y: 0.6 },
       colors: ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#FFB300'],
@@ -56,15 +54,13 @@ function onSubmit () {
     })
 
     playCorrect()
-    playSuccessMP3()
 
-    // Streak fanfare at milestones
-    if (streak.value === 5 || streak.value === 10 || streak.value % 10 === 0) {
+    // Streak fanfare at milestones (5, then every 10)
+    if (streak.value === 5 || streak.value % 10 === 0) {
       setTimeout(playStreak, 400)
     }
 
     setTimeout(() => {
-      // Don't generate next problem if level up is being shown
       if (!showLevelUp.value) generateProblem()
     }, 1400)
   } else {
@@ -79,7 +75,6 @@ function closeLevelUp() {
 }
 
 // Watch for level up to play the fanfare
-import { watch } from 'vue'
 watch(showLevelUp, (val) => {
   if (val) playLevelUp()
 })
@@ -111,7 +106,6 @@ watch(showLevelUp, (val) => {
       :stars="stars"
       :streak="streak"
       :is-muted="isMuted"
-      :max-operand="difficulty.maxOperand"
       @toggle-mute="toggleMute"
     />
 
