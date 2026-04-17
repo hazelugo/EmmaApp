@@ -140,6 +140,16 @@ App.vue (stateful root — owns all composable state)
 - Orchestrates the answer cycle with `onSubmit()`, `onDigit()`, `onBackspace()`
 - Watches `showLevelUp` to trigger level-up fanfare sound
 
+## Conventions
+
+**Naming:** PascalCase for UI components (`ChallengeZone.vue`), camelCase for composables and functions (`useMathGame.js`).
+**Structure:** Feature-based functional separation — `src/components/` for UI blocks, `src/composables/` for reusable logic.
+**Testing:** No test directories or test patterns present.
+
+## Technical Debt
+
+No TODO/FIXME markers in source files. No test coverage. `playSuccessMP3()` in `useSound.js` is a stub referencing a placeholder `/public/sounds/coin.mp3`.
+
 ---
 
 *Architecture analysis: 2026-04-14*
