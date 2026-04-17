@@ -33,7 +33,10 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
   3. Purchased/equipped items persist after browser refresh (localStorage `emma-shop-*` keys)
   4. Spending more stars than balance is blocked (button disabled state)
   5. `npm run build` passes with no errors
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Placeholder variant PNGs + useShop.js composable (catalog, optimistic purchase, 10s undo, delta rollback, localStorage)
+- [ ] 01-02-PLAN.md — ShopItemCard.vue, UndoToast.vue, ShopOverlay.vue components (pure presentation, 2-col grid, scoped fade transitions)
+- [ ] 01-03-PLAN.md — Wire useShop into App.vue; add shop button to ScoreHeader; thread variantSrc prop through ChallengeZone & MascotPanel; end-to-end human-verify checkpoint
 
 ### Phase 2: Multiplication & Division
 **Goal**: Unlock multiplication at level 3 and division at level 5, with independent per-operator difficulty scaling using a `maxOperandByOperator` object.
