@@ -55,13 +55,13 @@ All text uses the `Gamtex` font family (`var(--font-display)` / `var(--font-body
 | Role | Size | Weight | Line Height | Usage |
 |------|------|--------|-------------|-------|
 | Body | 14px (`text-sm`) | 400 (normal) | 1.5 | Item color name, price label, status badge text |
-| Label | 16px (`text-base`) | 700 (extrabold) | 1.4 | Equipped/Owned/price badge, card metadata |
-| Heading | 20px (`text-xl`) | 800 (extrabold) | 1.2 | Shop overlay title ("Star Shop") |
-| Display | 28px (`text-3xl`) | 800 (extrabold) | 1.1 | Star balance shown in shop header area |
+| Label | 16px (`text-base`) | 700 (bold) | 1.4 | Equipped/Owned/price badge, card metadata |
+| Heading | 20px (`text-xl`) | 700 (bold) | 1.2 | Shop overlay title ("Star Shop") |
+| Display | 28px (`text-3xl`) | 700 (bold) | 1.1 | Star balance shown in shop header area |
 
-Weight palette: **400 (normal) + 700–800 (extrabold)**. Gamtex reads as bold by default; use `font-extrabold` for headings, `font-bold` for labels, no explicit weight class for body.
+Weight palette: **400 (normal) + 700 (bold)**. Use `font-bold` for all emphasized roles (Label, Heading, Display); no explicit weight class for body (inherits 400).
 
-Source: existing components use `font-extrabold tracking-wide text-star-gold` for score display and `font-bold text-sm` for character name badges — carry forward exactly.
+Source: existing components use `font-bold tracking-wide text-star-gold` for score display and `font-bold text-sm` for character name badges — carry forward exactly.
 
 ---
 
