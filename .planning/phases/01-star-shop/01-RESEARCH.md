@@ -577,7 +577,7 @@ const variantSrcs = Object.fromEntries(
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **z-index of existing modals vs. shop**
    - What we know: CharacterSelect uses `z-[200]`; LevelVictoryModal and LevelIntroModal are not directly checked
