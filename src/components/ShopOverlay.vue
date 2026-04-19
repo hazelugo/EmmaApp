@@ -57,12 +57,12 @@ function onCardPurchase (itemId) {
       <div class="flex items-center gap-2 min-w-0">
         <span class="text-2xl">🏪</span>
         <h2 class="text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md truncate">
-          Star Shop
+          Coin Shop
         </h2>
       </div>
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-1">
-          <span class="text-2xl">⭐</span>
+          <span class="text-2xl">🪙</span>
           <span class="text-2xl font-extrabold text-star-gold drop-shadow-lg">{{ stars }}</span>
         </div>
         <button
@@ -93,7 +93,7 @@ function onCardPurchase (itemId) {
 
       <!-- Empty-state copy block, always visible underneath the grid for a 6-year-old audience -->
       <p class="text-center text-dark/70 text-sm font-medium mt-6 px-2">
-        Answer math problems to earn ⭐ stars, then come back to spend them.
+        Answer math problems to earn 🪙 coins, then come back to spend them.
       </p>
     </main>
 

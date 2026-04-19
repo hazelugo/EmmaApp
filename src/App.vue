@@ -18,7 +18,7 @@ import { getLevelTheme } from './composables/useLevelTheme.js'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
-  stars, streak, problemKey,
+  stars, problemKey,
   currentProblem, answer, feedback,
   difficulty, showLevelUp,
   showLevelVictory, completedLevel,
@@ -27,7 +27,7 @@ const {
   appendDigit, backspace, resetGame,
 } = useMathGame()
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+const { isMuted, toggleMute, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
 
 /* ── Shop ─────────────────────────────────────────────────────── */
 const {
@@ -111,11 +111,6 @@ function onSubmit () {
     })
 
     playCorrect()
-
-    // Streak fanfare at milestones (5, then every 10)
-    if (streak.value === 5 || streak.value % 10 === 0) {
-      setTimeout(playStreak, 400)
-    }
 
     setTimeout(() => {
       // Don't generate next problem while victory, intro, or level-up screens are showing
@@ -224,7 +219,6 @@ watch(showLevelVictory, (val) => {
     <!-- ★ Score Header -->
     <ScoreHeader
       :stars="stars"
-      :streak="streak"
       :is-muted="isMuted"
       @toggle-mute="toggleMute"
       @open-shop="onOpenShop"

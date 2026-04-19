@@ -44,7 +44,7 @@ function onTap () {
     }"
     :disabled="!isInteractive"
     :aria-disabled="!isInteractive ? 'true' : 'false'"
-    :aria-label="`${item.colorName} ${item.characterId} variant — ${item.price} stars — ${stateLabel}`"
+    :aria-label="`${item.colorName} ${item.characterId} variant — ${item.price} coins — ${stateLabel}`"
     @click="onTap"
   >
     <!-- Variant image -->
@@ -71,11 +71,11 @@ function onTap () {
       <span
         v-else-if="!canAfford"
         class="bg-dark/60 text-mushroom-white px-2 py-0.5 rounded-full font-bold text-xs"
-      >⭐ {{ item.price }}</span>
+      >🪙 {{ item.price }}</span>
       <span
         v-else
         class="bg-star-gold text-dark px-2 py-0.5 rounded-full font-bold text-xs border-2 border-dark/30"
-      >⭐ {{ item.price }}</span>
+      >🪙 {{ item.price }}</span>
     </div>
   </button>
 </template>
