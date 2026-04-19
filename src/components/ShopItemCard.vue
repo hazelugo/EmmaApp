@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue'
+import marioCoinSrc from '../assets/mario-coin.png'
 
 const props = defineProps({
   item:       { type: Object,  required: true },
@@ -70,12 +71,12 @@ function onTap () {
       >Owned</span>
       <span
         v-else-if="!canAfford"
-        class="bg-dark/60 text-mushroom-white px-2 py-0.5 rounded-full font-bold text-xs"
-      >🪙 {{ item.price }}</span>
+        class="flex items-center gap-0.5 bg-dark/60 text-mushroom-white px-2 py-0.5 rounded-full font-bold text-xs"
+      ><img :src="marioCoinSrc" alt="coin" class="w-3.5 h-3.5 inline" style="image-rendering:pixelated" /> {{ item.price }}</span>
       <span
         v-else
-        class="bg-star-gold text-dark px-2 py-0.5 rounded-full font-bold text-xs border-2 border-dark/30"
-      >🪙 {{ item.price }}</span>
+        class="flex items-center gap-0.5 bg-star-gold text-dark px-2 py-0.5 rounded-full font-bold text-xs border-2 border-dark/30"
+      ><img :src="marioCoinSrc" alt="coin" class="w-3.5 h-3.5 inline" style="image-rendering:pixelated" /> {{ item.price }}</span>
     </div>
   </button>
 </template>

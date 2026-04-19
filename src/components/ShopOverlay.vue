@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import ShopItemCard from './ShopItemCard.vue'
 import UndoToast   from './UndoToast.vue'
+import marioCoinSrc from '../assets/mario-coin.png'
 
 const props = defineProps({
   stars:            { type: Number,  required: true },
@@ -51,30 +52,30 @@ function onCardPurchase (itemId) {
 
 <template>
   <div class="fixed inset-0 z-[200] bg-sky flex flex-col">
-    <!-- Header: title + star balance + close button -->
-    <header class="block-border rounded-b-3xl bg-mario-red/95 backdrop-blur-sm px-4 py-3
+    <!-- Header: coin balance (left) · title (center) · close (right) -->
+    <header class="relative block-border rounded-b-3xl bg-mario-red/95 backdrop-blur-sm px-4 py-3
                    flex items-center justify-between gap-3">
-      <div class="flex items-center gap-2 min-w-0">
-        <span class="text-2xl">🏪</span>
-        <h2 class="text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md truncate">
-          Coin Shop
-        </h2>
+      <!-- Left: coin balance -->
+      <div class="flex items-center gap-1">
+        <img :src="marioCoinSrc" alt="coin" class="w-8 h-8" style="image-rendering: pixelated;" />
+        <span class="text-2xl font-extrabold text-star-gold drop-shadow-lg">{{ stars }}</span>
       </div>
-      <div class="flex items-center gap-3">
-        <div class="flex items-center gap-1">
-          <span class="text-2xl">🪙</span>
-          <span class="text-2xl font-extrabold text-star-gold drop-shadow-lg">{{ stars }}</span>
-        </div>
-        <button
-          type="button"
-          class="btn-press flex items-center justify-center w-11 h-11 rounded-xl
-                 bg-mushroom-white/20 hover:bg-mushroom-white/40 transition-colors cursor-pointer"
-          aria-label="Close shop"
-          @click="emit('close')"
-        >
-          <span class="text-2xl text-mushroom-white drop-shadow-md">✕</span>
-        </button>
-      </div>
+
+      <!-- Center: title (absolutely centered so it's always mid-header) -->
+      <h2 class="absolute left-1/2 -translate-x-1/2 text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md whitespace-nowrap pointer-events-none">
+        Coin Shop
+      </h2>
+
+      <!-- Right: close button -->
+      <button
+        type="button"
+        class="btn-press flex items-center justify-center w-11 h-11 rounded-xl
+               bg-mushroom-white/20 hover:bg-mushroom-white/40 transition-colors cursor-pointer"
+        aria-label="Close shop"
+        @click="emit('close')"
+      >
+        <span class="text-2xl text-mushroom-white drop-shadow-md">✕</span>
+      </button>
     </header>
 
     <!-- Grid body: 2 columns, scrollable -->
@@ -93,7 +94,7 @@ function onCardPurchase (itemId) {
 
       <!-- Empty-state copy block, always visible underneath the grid for a 6-year-old audience -->
       <p class="text-center text-dark/70 text-sm font-medium mt-6 px-2">
-        Answer math problems to earn 🪙 coins, then come back to spend them.
+        Answer math problems to earn coins, then come back to spend them.
       </p>
     </main>
 
