@@ -110,14 +110,21 @@ export function useShop () {
   function purchaseItem (itemId, starsRef) {
     const item = CATALOG.find(i => i.id === itemId)
     if (!item) return
+
+    // Already owned — re-equip for free, no undo window
+    if (isOwned(itemId)) {
+      equippedVariants.value = { ...equippedVariants.value, [item.characterId]: itemId }
+      setStorage('emma-shop-equipped', equippedVariants.value)
+      return
+    }
+
     if (starsRef.value < item.price) return  // SHOP-05: guard at composable level
 
     // Finalize any pending prior purchase BEFORE starting a new undo window
-    // (single timer at a time — prevents two concurrent undo windows)
     if (pendingUndo) {
       const prior = pendingUndo
       clearTimeout(undoTimer)
-      finalizePurchase(prior.itemId)
+      finalizePurchase(prior.itemId, starsRef)
     }
 
     // Snapshot for rollback
@@ -128,7 +135,7 @@ export function useShop () {
       prevEquipped: equippedVariants.value[item.characterId] || null,
     }
 
-    // Optimistic mutation (D-06)
+    // Optimistic mutation
     starsRef.value -= item.price
     equippedVariants.value = {
       ...equippedVariants.value,
@@ -136,18 +143,18 @@ export function useShop () {
     }
     pendingUndoItemId.value = itemId
 
-    // 10s undo window (D-07)
-    undoTimer = setTimeout(() => finalizePurchase(itemId), 10_000)
+    // 10s undo window
+    undoTimer = setTimeout(() => finalizePurchase(itemId, starsRef), 10_000)
   }
 
-  function finalizePurchase (itemId) {
-    // Defaults are never written to owned
+  function finalizePurchase (itemId, starsRef) {
     const item = CATALOG.find(i => i.id === itemId)
     if (item && item.price > 0 && !owned.value.includes(itemId)) {
       owned.value = [...owned.value, itemId]
     }
     setStorage('emma-shop-owned',    owned.value)
     setStorage('emma-shop-equipped', equippedVariants.value)
+    if (starsRef) setStorage('emma-stars', starsRef.value)
     pendingUndo = null
     pendingUndoItemId.value = null
     undoTimer = null
@@ -158,10 +165,9 @@ export function useShop () {
     clearTimeout(undoTimer)
     undoTimer = null
 
-    // Delta rollback (Pitfall 2): refund the price, DO NOT snapshot-restore
     starsRef.value += pendingUndo.price
+    setStorage('emma-stars', starsRef.value)
 
-    // Restore previously equipped variant (or remove the key)
     const next = { ...equippedVariants.value }
     if (pendingUndo.prevEquipped) {
       next[pendingUndo.characterId] = pendingUndo.prevEquipped
@@ -172,7 +178,6 @@ export function useShop () {
 
     pendingUndo = null
     pendingUndoItemId.value = null
-    // NOTE: intentionally do NOT write localStorage here — undo never touches disk.
   }
 
   return {
