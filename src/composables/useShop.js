@@ -175,6 +175,7 @@ export function useShop () {
       delete next[pendingUndo.characterId]
     }
     equippedVariants.value = next
+    setStorage('emma-shop-equipped', equippedVariants.value)
 
     pendingUndo = null
     pendingUndoItemId.value = null
