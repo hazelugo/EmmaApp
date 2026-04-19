@@ -36,8 +36,8 @@ function onTap () {
 <template>
   <button
     type="button"
-    class="relative rounded-2xl border-4 block-border flex flex-col items-center justify-center
-           min-h-[60px] min-w-[60px] p-3 transition-all duration-300 btn-press cursor-pointer
+    class="relative rounded-2xl border-4 block-border flex flex-col items-center justify-between
+           min-h-[60px] min-w-[60px] p-3 pb-2 transition-all duration-300 btn-press cursor-pointer
            bg-mushroom-white/90 overflow-hidden"
     :class="{
       'opacity-50 cursor-not-allowed': !isInteractive,
@@ -59,8 +59,8 @@ function onTap () {
     <!-- Color name -->
     <span class="mt-1 text-sm font-bold text-dark">{{ item.colorName }}</span>
 
-    <!-- State badge pinned to bottom -->
-    <div class="absolute bottom-1 left-0 right-0 flex justify-center z-10 pointer-events-none">
+    <!-- State badge -->
+    <div class="mt-1 flex justify-center">
       <span
         v-if="isEquipped"
         class="bg-star-gold text-dark px-2 py-0.5 rounded-full font-bold text-xs border-2 border-dark/30"
