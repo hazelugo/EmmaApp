@@ -6,12 +6,14 @@ import LevelUpModal     from './components/LevelUpModal.vue'
 import CharacterSelect  from './components/CharacterSelect.vue'
 import LevelIntroModal  from './components/LevelIntroModal.vue'
 import LevelVictoryModal from './components/LevelVictoryModal.vue'
+import ShopOverlay from './components/ShopOverlay.vue'
 
 import { ref, computed, watch } from 'vue'
 import confetti from 'canvas-confetti'
 
 import { useMathGame }   from './composables/useMathGame.js'
 import { useSound }      from './composables/useSound.js'
+import { useShop }       from './composables/useShop.js'
 import { getLevelTheme } from './composables/useLevelTheme.js'
 
 /* ── Composables ──────────────────────────────────────────────── */
@@ -26,6 +28,46 @@ const {
 } = useMathGame()
 
 const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+
+/* ── Shop ─────────────────────────────────────────────────────── */
+const {
+  CATALOG,
+  owned,
+  equippedVariants,
+  pendingUndoItem,
+  purchaseItem,
+  undoPurchase,
+  equippedSrcForCharacter,
+} = useShop()
+
+const showShop = ref(false)
+
+function onOpenShop () {
+  showShop.value = true
+}
+
+function onCloseShop () {
+  showShop.value = false
+}
+
+function onPurchaseItem (itemId) {
+  purchaseItem(itemId, stars)
+}
+
+function onUndoPurchase () {
+  undoPurchase(stars)
+}
+
+function onUndoExpired () {
+  // Timer already fired inside useShop; nothing to do here.
+  // Handler exists so the @expired event on <ShopOverlay> has a binding.
+}
+
+/** Equipped variant src for the currently selected character, or null. */
+const equippedVariantSrc = computed(() => {
+  if (!selectedCharacter.value) return null
+  return equippedSrcForCharacter(selectedCharacter.value.id)
+})
 
 /* ── Level themes ─────────────────────────────────────────────── */
 // Theme for the INCOMING level (pre-level intro)
@@ -117,6 +159,7 @@ function onLevelIntroStart () {
 // Watch for victory to stop music and play fanfare
 watch(showLevelVictory, (val) => {
   if (val) {
+    showShop.value = false          // prevent z-[200] overlap with victory overlay
     stopThemeMusic()
     playLevelUp()
   }
@@ -162,12 +205,29 @@ watch(showLevelVictory, (val) => {
       @close="closeLevelUp"
     />
 
+    <!-- Star Shop Overlay -->
+    <Transition name="fade">
+      <ShopOverlay
+        v-if="showShop"
+        :stars="stars"
+        :catalog="CATALOG"
+        :owned="owned"
+        :equipped-variants="equippedVariants"
+        :pending-undo-item="pendingUndoItem"
+        @close="onCloseShop"
+        @purchase="onPurchaseItem"
+        @undo="onUndoPurchase"
+        @expired="onUndoExpired"
+      />
+    </Transition>
+
     <!-- ★ Score Header -->
     <ScoreHeader
       :stars="stars"
       :streak="streak"
       :is-muted="isMuted"
       @toggle-mute="toggleMute"
+      @open-shop="onOpenShop"
     />
 
     <!-- Middle: Challenge -->
@@ -181,6 +241,7 @@ watch(showLevelVictory, (val) => {
         :feedback="feedback"
         :problem-key="problemKey"
         :character="selectedCharacter"
+        :variant-src="equippedVariantSrc"
       />
     </div>
 
