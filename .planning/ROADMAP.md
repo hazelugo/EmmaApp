@@ -36,7 +36,7 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 **Plans**: 3 plans
 - [x] 01-01-PLAN.md — Placeholder variant PNGs + useShop.js composable (catalog, optimistic purchase, 10s undo, delta rollback, localStorage)
 - [x] 01-02-PLAN.md — ShopItemCard.vue, UndoToast.vue, ShopOverlay.vue components (pure presentation, 2-col grid, scoped fade transitions)
-- [ ] 01-03-PLAN.md — Wire useShop into App.vue; add shop button to ScoreHeader; thread variantSrc prop through ChallengeZone & MascotPanel; end-to-end human-verify checkpoint
+- [x] 01-03-PLAN.md — Wire useShop into App.vue; add shop button to ScoreHeader; thread variantSrc prop through ChallengeZone & MascotPanel; end-to-end human-verify checkpoint
 
 ### Phase 2: Multiplication & Division
 **Goal**: Unlock multiplication at level 3 and division at level 5, with independent per-operator difficulty scaling using a `maxOperandByOperator` object.
