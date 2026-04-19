@@ -8,7 +8,7 @@ defineProps({
   isMuted: { type: Boolean, default: false },
 })
 
-defineEmits(['toggle-mute'])
+defineEmits(['toggle-mute', 'open-shop'])
 </script>
 
 <template>
@@ -45,6 +45,18 @@ defineEmits(['toggle-mute'])
         <img :src="starSrc" alt="star" class="w-6 h-6 streak-star" style="image-rendering: pixelated;" />
         <span class="text-lg md:text-xl font-bold text-star-gold">{{ streak }}</span>
       </div>
+
+      <!-- Shop Entry -->
+      <button
+        id="btn-shop"
+        type="button"
+        class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
+               rounded-xl hover:scale-110 transition-transform cursor-pointer"
+        aria-label="Open Star Shop"
+        @click="$emit('open-shop')"
+      >
+        <span class="text-xl md:text-2xl drop-shadow-md">🏪</span>
+      </button>
 
       <!-- Mute Toggle -->
       <button

@@ -7,6 +7,7 @@ defineProps({
   feedback:   { type: String, default: '' },
   problemKey: { type: Number, default: 0 },
   character:  { type: Object, required: true },
+  variantSrc: { type: String, default: null  },
 })
 </script>
 
@@ -30,8 +31,8 @@ defineProps({
         :class="character.bg"
       ></div>
       <img
-        v-if="character.src"
-        :src="character.src"
+        v-if="variantSrc || character.src"
+        :src="variantSrc || character.src"
         :alt="character.name"
         class="relative w-24 md:w-36 animate-float drop-shadow-xl z-20"
         style="image-rendering: pixelated;"
