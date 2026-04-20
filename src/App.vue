@@ -7,6 +7,7 @@ import CharacterSelect  from './components/CharacterSelect.vue'
 import LevelIntroModal  from './components/LevelIntroModal.vue'
 import LevelVictoryModal from './components/LevelVictoryModal.vue'
 import ShopOverlay from './components/ShopOverlay.vue'
+import OperatorTutorialOverlay from './components/OperatorTutorialOverlay.vue'
 
 import { ref, computed, watch } from 'vue'
 import confetti from 'canvas-confetti'
@@ -23,8 +24,11 @@ const {
   difficulty, showLevelUp,
   showLevelVictory, completedLevel,
   showLevelIntro, pendingLevel,
+  showTutorial, tutorialOperator,
+  zeroHint,
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace, resetGame,
+  dismissTutorial,
 } = useMathGame()
 
 const { isMuted, toggleMute, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
@@ -75,6 +79,13 @@ const currentTheme = computed(() => getLevelTheme(pendingLevel.value, selectedCh
 // Theme for the level that was JUST beaten (victory screen)
 const victoryTheme = computed(() => getLevelTheme(completedLevel.value, selectedCharacter.value?.id))
 
+/* ── Operator unlock announcement (D-16) ──────────────────────── */
+const unlockedOperator = computed(() => {
+  if (pendingLevel.value === 3) return '×'
+  if (pendingLevel.value === 5) return '÷'
+  return null
+})
+
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
 
@@ -113,8 +124,8 @@ function onSubmit () {
     playCorrect()
 
     setTimeout(() => {
-      // Don't generate next problem while victory, intro, or level-up screens are showing
-      if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value) generateProblem()
+      // Don't generate next problem while victory, intro, level-up, or tutorial screens are showing
+      if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value && !showTutorial.value) generateProblem()
     }, 1400)
   } else {
     playWrong()
@@ -124,7 +135,7 @@ function onSubmit () {
 
 function closeLevelUp () {
   showLevelUp.value = false
-  if (!showLevelIntro.value && !showLevelVictory.value) generateProblem()
+  if (!showLevelIntro.value && !showLevelVictory.value && !showTutorial.value) generateProblem()
 }
 
 /**
@@ -190,7 +201,16 @@ watch(showLevelVictory, (val) => {
       :level="pendingLevel"
       :theme="currentTheme"
       :is-muted="isMuted"
+      :unlocked-operator="unlockedOperator"
       @start="onLevelIntroStart"
+    />
+
+    <!-- Operator Tutorial — fires once per newly-unlocked operator (MATH-01, MATH-02) -->
+    <OperatorTutorialOverlay
+      v-if="selectedCharacter"
+      :show="showTutorial"
+      :operator="tutorialOperator"
+      @done="dismissTutorial"
     />
 
     <!-- Level Up Modal overlay -->
@@ -236,6 +256,7 @@ watch(showLevelVictory, (val) => {
         :problem-key="problemKey"
         :character="selectedCharacter"
         :variant-src="equippedVariantSrc"
+        :zero-hint="zeroHint"
       />
     </div>
 
