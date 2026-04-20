@@ -153,6 +153,29 @@ function onBackspace () {
 }
 
 function onSubmit () {
+  // ── Timer Mode path ────────────────────────────────────────────
+  if (isTimerMode.value) {
+    if (answer.value === '') return   // nothing to check
+
+    const prob = timer.currentProblem.value
+    let correctAnswer
+    if (prob.operator === '+') correctAnswer = prob.a + prob.b
+    else correctAnswer = prob.a - prob.b   // timer mode is +/- only
+
+    if (Number(answer.value) === correctAnswer) {
+      playCorrect()
+      timer.incrementScore()
+      timer.incrementCorrect()
+      answer.value = ''
+      timer.nextProblem()           // immediate next problem — no delay
+    } else {
+      playWrong()
+      answer.value = ''             // clear input; no penalty, no delay
+    }
+    return
+  }
+
+  // ── Standard Mode path ────────────────────────────────────────
   const result = checkAnswer()
   if (!result) return
 
@@ -305,9 +328,9 @@ watch(showLevelVictory, (val) => {
     <div class="flex flex-1 gap-3 items-stretch min-h-0">
       <ChallengeZone
         v-if="selectedCharacter"
-        :num1="currentProblem.a"
-        :num2="currentProblem.b"
-        :operator="currentProblem.operator"
+        :num1="isTimerMode ? timer.currentProblem.value.a : currentProblem.a"
+        :num2="isTimerMode ? timer.currentProblem.value.b : currentProblem.b"
+        :operator="isTimerMode ? timer.currentProblem.value.operator : currentProblem.operator"
         :answer="answer"
         :feedback="feedback"
         :problem-key="problemKey"
