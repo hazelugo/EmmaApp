@@ -545,22 +545,25 @@ Use this same `timers` + `clearTimers()` pattern for tutorial step auto-advance 
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Does the existing `fade` Transition have CSS rules defined?**
    - What we know: `<Transition name="fade">` is used in `App.vue` for `CharacterSelect` and `ShopOverlay`.
    - What's unclear: No `.fade-enter-active` rule was found in `style.css` during inspection. The transition may rely on implicit Vue behavior (adding/removing classes without CSS, making it instant) or the rule may be inline in a component's `<style>` block.
    - Recommendation: Add explicit `.fade-enter-active { transition: opacity 0.3s ease; }` and `.fade-leave-active { transition: opacity 0.2s ease; }` to `style.css` in Wave 0 to ensure the overlay fades visibly for `OperatorTutorialOverlay`.
+   - RESOLVED: No global `.fade-enter-active` CSS rule exists. `OperatorTutorialOverlay.vue` uses `name="tutorial-fade"` with a `<style scoped>` block defining its own transition rules. Plans implement this correctly.
 
 2. **Should `adjustDifficulty()` use a per-operator history window?**
    - What we know: Currently one shared 10-answer history. With 2–4 operators unlocked, the history mixes operators, so signal for any single operator arrives slowly.
    - What's unclear: Whether this matters for a 6-year-old's session (sessions may be short enough that per-operator history is an over-optimization).
    - Recommendation: Keep the shared history window for Phase 2. If the child experiences stagnant difficulty on one operator, revisit in a later phase.
+   - RESOLVED: Shared history window retained. Plans implement one shared `difficulty.history` window; only `maxOperandByOperator[currentOperator]` is updated per difficulty cycle.
 
 3. **What is the visual appearance of the zero-hint speech bubble?**
    - What we know: MascotPanel.vue has no existing speech bubble — the feedback state (`'correct'`/`'wrong'`) only animates the character image (scale up, shake).
    - What's unclear: Whether the speech bubble should appear inside MascotPanel's `<aside>` or be positioned relative to the character from a different parent element.
    - Recommendation: Add a `zeroHint` prop to MascotPanel; render a `<div>` with absolute positioning above the character sprite, using Tailwind classes. The `<aside>` has `relative` positioning available via adding it as a class.
+   - RESOLVED: Speech bubble implemented directly in `ChallengeZone.vue` (MascotPanel is not in the render tree). Absolute-positioned `<div>` with Tailwind classes above the character sprite; 3s `setTimeout` auto-dismiss via `watch` on `zeroHint`.
 
 ---
 
