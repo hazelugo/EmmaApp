@@ -44,7 +44,8 @@ const variantSrcs = Object.fromEntries(
 /* ── Catalog ────────────────────────────────────────────────── */
 
 const CHARACTER_IDS = ['peach', 'daisy', 'rosalina', 'toad']
-const VARIANT_DEFS = [
+
+const DEFAULT_VARIANTS = [
   { variantId: 'default', colorName: 'Classic', price: 0  },
   { variantId: 'blue',    colorName: 'Ocean',   price: 15 },
   { variantId: 'green',   colorName: 'Forest',  price: 15 },
@@ -52,9 +53,26 @@ const VARIANT_DEFS = [
   { variantId: 'yellow',  colorName: 'Sunny',   price: 15 },
 ]
 
+const PEACH_VARIANTS = [
+  { variantId: 'default', colorName: 'Classic', price: 0  },
+  { variantId: 'cook',    colorName: 'Chef',    price: 15 },
+  { variantId: 'doctor',  colorName: 'Doctor',  price: 15 },
+  { variantId: 'fire',    colorName: 'Fire',    price: 15 },
+  { variantId: 'soccer',  colorName: 'Striker', price: 15 },
+  { variantId: 'tennis',  colorName: 'Tennis',  price: 15 },
+]
+
+const CHARACTER_VARIANTS = {
+  peach: PEACH_VARIANTS,
+  daisy: DEFAULT_VARIANTS,
+  rosalina: DEFAULT_VARIANTS,
+  toad: DEFAULT_VARIANTS,
+}
+
 const CATALOG = Object.freeze(
-  CHARACTER_IDS.flatMap(characterId =>
-    VARIANT_DEFS.map(v => Object.freeze({
+  CHARACTER_IDS.flatMap(characterId => {
+    const variants = CHARACTER_VARIANTS[characterId]
+    return variants.map(v => Object.freeze({
       id:          `${characterId}-${v.variantId}`,
       characterId,
       variantId:   v.variantId,
@@ -62,7 +80,7 @@ const CATALOG = Object.freeze(
       price:       v.price,
       src:         variantSrcs[`${characterId}-${v.variantId}`],
     }))
-  )
+  })
 )
 
 /* ── State ──────────────────────────────────────────────────── */
