@@ -8,7 +8,7 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 
 - [x] **Phase 1: Star Shop** — Star-powered reward shop where players spend earned stars on cosmetic items (mascot color variants)
 - [x] **Phase 2: Multiplication & Division** — Unlock multiplication at level 3, division at level 5, with per-operator difficulty scaling
-- [ ] **Phase 3: Timer Mode** — 60-second sprint challenge mode accessible from the main game screen
+- [x] **Phase 3: Timer Mode** — 60-second sprint challenge mode accessible from the main game screen (completed 2026-04-20)
 - [ ] **Phase 4: Sound Settings** — Persistent mute state with volume slider; modal from mute button
 - [ ] **Phase 5: PWA** — Progressive Web App support for mobile install and offline play
 - [ ] **Phase 6: Unit Testing** — Vitest unit tests for useMathGame composable at 85%+ coverage
