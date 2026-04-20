@@ -1,4 +1,5 @@
 import { ref, computed, reactive } from 'vue'
+import { generateOperands } from '../utils/mathUtils.js'
 
 /**
  * Core math game composable.
@@ -159,27 +160,9 @@ export function useMathGame () {
     currentProblem.operator = ops[Math.floor(Math.random() * ops.length)]
     const max = difficulty.maxOperandByOperator[currentProblem.operator]
 
-    if (currentProblem.operator === '+') {
-      currentProblem.a = Math.floor(Math.random() * max) + 1
-      currentProblem.b = Math.floor(Math.random() * max) + 1
-    } else if (currentProblem.operator === '-') {
-      // Constraint: a >= b to avoid negative results
-      const a = Math.floor(Math.random() * max) + 1
-      const b = Math.floor(Math.random() * (a + 1))
-      currentProblem.a = a
-      currentProblem.b = b
-    } else if (currentProblem.operator === '×') {
-      // Zero is allowed per D-09 — hint will fire via zeroHint computed
-      currentProblem.a = Math.floor(Math.random() * (max + 1))  // 0..max
-      currentProblem.b = Math.floor(Math.random() * (max + 1))
-    } else if (currentProblem.operator === '÷') {
-      // Quotient-first (D-07): guarantees clean integer result, no retry loop.
-      // Min divisor 2 (per D-08) — avoids trivial a÷1 problems.
-      const divisor  = Math.floor(Math.random() * Math.max(1, max - 1)) + 2  // 2..max (or at least 2 when max<3)
-      const quotient = Math.floor(Math.random() * max) + 1                   // 1..max
-      currentProblem.a = divisor * quotient
-      currentProblem.b = divisor
-    }
+    const { a, b } = generateOperands(currentProblem.operator, max)
+    currentProblem.a = a
+    currentProblem.b = b
 
     answer.value   = ''
     feedback.value = ''
