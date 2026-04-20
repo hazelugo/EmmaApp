@@ -5,6 +5,12 @@ import { ref, computed, reactive } from 'vue'
  *
  * Manages problem generation, answer checking, scoring,
  * streak tracking, adaptive difficulty, and level progression.
+ *
+ * Phase 2 additions:
+ *   - maxOperandByOperator: per-operator difficulty tracking
+ *   - Operator gate: × at level 3, ÷ at level 5 (quotient-first)
+ *   - Tutorial state machine: showTutorial, tutorialOperator, dismissTutorial
+ *   - zeroHint computed: operator-specific zero-operand hint text
  */
 
 function getStorage (key, fallback) {
@@ -24,6 +30,10 @@ function setStorage (key, value) {
   }
 }
 
+function getStorageBool (key) {
+  try { return !!localStorage.getItem(key) } catch { return false }
+}
+
 export function useMathGame () {
   /* ── Score & Streak ─────────────────────────────────────────── */
   const stars      = ref(getStorage('emma-stars', 0))
@@ -41,6 +51,10 @@ export function useMathGame () {
   const showLevelIntro   = ref(false)
   const pendingLevel     = ref(level.value) // which level the intro is showing for
 
+  /* ── Tutorial State ─────────────────────────────────────────── */
+  const showTutorial     = ref(false)
+  const tutorialOperator = ref(null)  // '×' | '÷' | null
+
   /* ── Current Problem ────────────────────────────────────────── */
   const currentProblem = reactive({
     a:        0,
@@ -53,7 +67,12 @@ export function useMathGame () {
 
   /* ── Adaptive Difficulty ────────────────────────────────────── */
   const difficulty = reactive({
-    maxOperand:  getStorage('emma-maxOperand', 5),
+    maxOperandByOperator: {
+      '+': getStorage('emma-maxOperand-add',       10),
+      '-': getStorage('emma-maxOperand-subtract',  10),
+      '×': getStorage('emma-maxOperand-multiply',   3),
+      '÷': getStorage('emma-maxOperand-divide',     3),
+    },
     history:     [],      // rolling window of true/false results
     historySize: 10,
   })
@@ -64,40 +83,102 @@ export function useMathGame () {
     return correct / difficulty.history.length
   })
 
-  /** Adjust difficulty to maintain ~80% success rate (Vygotsky ZPD) */
-  function adjustDifficulty () {
-    if (difficulty.history.length < 5) return  // need enough data
+  function operatorKey (op) {
+    return { '+': 'add', '-': 'subtract', '×': 'multiply', '÷': 'divide' }[op]
+  }
 
-    if (successRate.value >= 0.9 && difficulty.maxOperand < 20) {
-      difficulty.maxOperand = Math.min(difficulty.maxOperand + 1, 20)
-      setStorage('emma-maxOperand', difficulty.maxOperand)
-    } else if (successRate.value < 0.6 && difficulty.maxOperand > 3) {
-      difficulty.maxOperand = Math.max(difficulty.maxOperand - 1, 3)
-      setStorage('emma-maxOperand', difficulty.maxOperand)
+  /** Adjust difficulty to maintain ~80% success rate (Vygotsky ZPD) — per operator */
+  function adjustDifficulty () {
+    if (difficulty.history.length < 5) return
+    const op    = currentProblem.operator
+    const cap   = (op === '×' || op === '÷') ? 10 : 20
+    const floor = 3
+
+    if (successRate.value >= 0.9 && difficulty.maxOperandByOperator[op] < cap) {
+      difficulty.maxOperandByOperator[op] = Math.min(difficulty.maxOperandByOperator[op] + 1, cap)
+      setStorage(`emma-maxOperand-${operatorKey(op)}`, difficulty.maxOperandByOperator[op])
+    } else if (successRate.value < 0.6 && difficulty.maxOperandByOperator[op] > floor) {
+      difficulty.maxOperandByOperator[op] = Math.max(difficulty.maxOperandByOperator[op] - 1, floor)
+      setStorage(`emma-maxOperand-${operatorKey(op)}`, difficulty.maxOperandByOperator[op])
     }
   }
 
   /* ── Derived ────────────────────────────────────────────────── */
   const correctAnswer = computed(() => {
     if (currentProblem.operator === '+') return currentProblem.a + currentProblem.b
-    return currentProblem.a - currentProblem.b
+    if (currentProblem.operator === '-') return currentProblem.a - currentProblem.b
+    if (currentProblem.operator === '×') return currentProblem.a * currentProblem.b
+    if (currentProblem.operator === '÷') return currentProblem.a / currentProblem.b  // integer by construction
+    return 0
   })
+
+  /** Operator-specific hint text when a problem contains a zero operand. Empty string when no zero. */
+  const zeroHint = computed(() => {
+    const { a, b, operator } = currentProblem
+    if (a !== 0 && b !== 0) return ''
+    if (operator === '×') return 'Anything times zero is zero!'
+    if (operator === '+') return 'Adding zero doesn\'t change a number!'
+    if (operator === '-') return 'Subtracting zero leaves it the same!'
+    if (operator === '÷' && a === 0) return 'Zero divided by anything is zero!'
+    return ''
+  })
+
+  /** If a newly-unlocked operator has never been seen, set tutorial state and signal caller to skip problem gen. */
+  function checkOperatorUnlock () {
+    if (level.value >= 3 && !getStorageBool('emma-tutorial-multiply-seen')) {
+      tutorialOperator.value = '×'
+      showTutorial.value     = true
+      return true
+    }
+    if (level.value >= 5 && !getStorageBool('emma-tutorial-divide-seen')) {
+      tutorialOperator.value = '÷'
+      showTutorial.value     = true
+      return true
+    }
+    return false
+  }
+
+  /** Caller (App.vue) invokes this when the tutorial overlay emits 'done'. Marks seen, clears state, starts problem. */
+  function dismissTutorial () {
+    if (tutorialOperator.value === '×') setStorage('emma-tutorial-multiply-seen', '1')
+    else if (tutorialOperator.value === '÷') setStorage('emma-tutorial-divide-seen', '1')
+    showTutorial.value     = false
+    tutorialOperator.value = null
+    generateProblem()
+  }
 
   /* ── Problem Generation ─────────────────────────────────────── */
   function generateProblem () {
+    // Tutorial gate: must run BEFORE any operands are assigned (D-13)
+    if (checkOperatorUnlock()) return  // overlay now showing; caller re-triggers via dismissTutorial()
+
     const ops = ['+', '-']
+    if (level.value >= 3) ops.push('×')
+    if (level.value >= 5) ops.push('÷')
+
     currentProblem.operator = ops[Math.floor(Math.random() * ops.length)]
-    const max = difficulty.maxOperand
+    const max = difficulty.maxOperandByOperator[currentProblem.operator]
 
     if (currentProblem.operator === '+') {
       currentProblem.a = Math.floor(Math.random() * max) + 1
       currentProblem.b = Math.floor(Math.random() * max) + 1
-    } else {
+    } else if (currentProblem.operator === '-') {
       // Constraint: a >= b to avoid negative results
       const a = Math.floor(Math.random() * max) + 1
       const b = Math.floor(Math.random() * (a + 1))
       currentProblem.a = a
       currentProblem.b = b
+    } else if (currentProblem.operator === '×') {
+      // Zero is allowed per D-09 — hint will fire via zeroHint computed
+      currentProblem.a = Math.floor(Math.random() * (max + 1))  // 0..max
+      currentProblem.b = Math.floor(Math.random() * (max + 1))
+    } else if (currentProblem.operator === '÷') {
+      // Quotient-first (D-07): guarantees clean integer result, no retry loop.
+      // Min divisor 2 (per D-08) — avoids trivial a÷1 problems.
+      const divisor  = Math.floor(Math.random() * Math.max(1, max - 1)) + 2  // 2..max (or at least 2 when max<3)
+      const quotient = Math.floor(Math.random() * max) + 1                   // 1..max
+      currentProblem.a = divisor * quotient
+      currentProblem.b = divisor
     }
 
     answer.value   = ''
@@ -197,14 +278,22 @@ export function useMathGame () {
     showLevelUp.value    = false
     showLevelVictory.value = false
     showLevelIntro.value = true
-    difficulty.maxOperand = 5
+    difficulty.maxOperandByOperator['+'] = 10
+    difficulty.maxOperandByOperator['-'] = 10
+    difficulty.maxOperandByOperator['×'] = 3
+    difficulty.maxOperandByOperator['÷'] = 3
     difficulty.history    = []
 
     setStorage('emma-stars', 0)
     setStorage('emma-streak', 0)
     setStorage('emma-level', 1)
     setStorage('emma-lastMilestone', 0)
-    setStorage('emma-maxOperand', 5)
+    setStorage('emma-maxOperand-add',      10)
+    setStorage('emma-maxOperand-subtract', 10)
+    setStorage('emma-maxOperand-multiply', 3)
+    setStorage('emma-maxOperand-divide',   3)
+    setStorage('emma-tutorial-multiply-seen', '')
+    setStorage('emma-tutorial-divide-seen',   '')
 
     generateProblem()
   }
@@ -215,7 +304,7 @@ export function useMathGame () {
   showLevelIntro.value = true
 
   return {
-    // State
+    // State (existing + new)
     stars,
     streak,
     level,
@@ -229,12 +318,14 @@ export function useMathGame () {
     completedLevel,
     showLevelIntro,
     pendingLevel,
+    showTutorial, tutorialOperator,     // NEW (Phase 2)
+    zeroHint,                            // NEW (Phase 2)
 
     // Difficulty info
     difficulty,
     successRate,
 
-    // Actions
+    // Actions (existing + new)
     generateProblem,
     checkAnswer,
     clearFeedback,
@@ -242,5 +333,6 @@ export function useMathGame () {
     backspace,
     getCutsceneVideoPath,
     resetGame,
+    dismissTutorial,                     // NEW (Phase 2)
   }
 }
