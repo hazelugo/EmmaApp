@@ -31,6 +31,7 @@ const {
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace, resetGame,
   dismissTutorial,
+  creditTimerCoins,                    // Phase 3: routes coins through milestone check
 } = useMathGame()
 
 const timer = useTimer()
@@ -72,9 +73,8 @@ function handleSprintStart () {
  */
 function handleSprintEnd () {
   timer.handleComplete()
-  // Add earned coins to the main star pool and persist to localStorage
-  stars.value += timer.stars.value
-  try { localStorage.setItem('emma-stars', stars.value) } catch { /* ignore */ }
+  // Route earned coins through milestone check so level progression fires correctly
+  creditTimerCoins(timer.stars.value)
   // Discard in-progress answer
   answer.value = ''
   isTimerMode.value = false

@@ -243,6 +243,33 @@ export function useMathGame () {
     return true
   }
 
+  /* ── Timer Coin Crediting ───────────────────────────────────── */
+
+  /**
+   * Credit coins earned outside normal checkAnswer flow (e.g., timer mode).
+   * Applies milestone check so level progression is not skipped.
+   *
+   * @param {number} amount - number of coins to add
+   */
+  function creditTimerCoins (amount) {
+    if (amount <= 0) return
+    for (let i = 0; i < amount; i++) {
+      stars.value++
+      setStorage('emma-stars', stars.value)
+      if (stars.value % 10 === 0 && stars.value > lastMilestone.value) {
+        lastMilestone.value = stars.value
+        setStorage('emma-lastMilestone', lastMilestone.value)
+        completedLevel.value   = level.value
+        showLevelVictory.value = true
+        if (level.value < 7) {
+          level.value++
+          setStorage('emma-level', level.value)
+          pendingLevel.value = level.value
+        }
+      }
+    }
+  }
+
   /* ── Cutscene Routing Logic ─────────────────────────────────── */
   function getCutsceneVideoPath (characterId, currentLevel) {
     // Expected future routing: return `/videos/${characterId}_level_${currentLevel}.mp4`
@@ -317,5 +344,6 @@ export function useMathGame () {
     getCutsceneVideoPath,
     resetGame,
     dismissTutorial,                     // NEW (Phase 2)
+    creditTimerCoins,                    // NEW (Phase 3)
   }
 }
