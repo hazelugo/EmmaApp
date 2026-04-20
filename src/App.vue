@@ -8,11 +8,13 @@ import LevelIntroModal  from './components/LevelIntroModal.vue'
 import LevelVictoryModal from './components/LevelVictoryModal.vue'
 import ShopOverlay from './components/ShopOverlay.vue'
 import OperatorTutorialOverlay from './components/OperatorTutorialOverlay.vue'
+import TimerResultsOverlay from './components/TimerResultsOverlay.vue'
 
 import { ref, computed, watch } from 'vue'
 import confetti from 'canvas-confetti'
 
 import { useMathGame }   from './composables/useMathGame.js'
+import { useTimer }      from './composables/useTimer.js'
 import { useSound }      from './composables/useSound.js'
 import { useShop }       from './composables/useShop.js'
 import { getLevelTheme } from './composables/useLevelTheme.js'
@@ -31,6 +33,12 @@ const {
   dismissTutorial,
 } = useMathGame()
 
+const timer = useTimer()
+
+/* ── Timer Mode State ─────────────────────────────────────────── */
+const isTimerMode       = ref(false)
+const showTimerResults  = ref(false)
+
 const { isMuted, toggleMute, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
 
 /* ── Shop ─────────────────────────────────────────────────────── */
@@ -45,6 +53,42 @@ const {
 } = useShop()
 
 const showShop = ref(false)
+
+/* ── Timer Mode Handlers ──────────────────────────────────────── */
+/**
+ * Called when the Sprint button is clicked (ScoreHeader emits 'start-sprint').
+ * Starts the 60-second countdown and switches the game into timer mode.
+ */
+function handleSprintStart () {
+  isTimerMode.value = true
+  showTimerResults.value = false
+  answer.value = ''
+  timer.startTimer(handleSprintEnd)
+}
+
+/**
+ * Called by useTimer's onComplete callback when the 60 seconds expire.
+ * Shows results overlay and persists earned coins to the main star pool.
+ */
+function handleSprintEnd () {
+  timer.handleComplete()
+  // Add earned coins to the main star pool and persist to localStorage
+  stars.value += timer.stars.value
+  try { localStorage.setItem('emma-stars', stars.value) } catch { /* ignore */ }
+  // Discard in-progress answer
+  answer.value = ''
+  isTimerMode.value = false
+  showTimerResults.value = true
+}
+
+/**
+ * Called when the player dismisses the results overlay.
+ * Restores normal game by generating a fresh standard problem.
+ */
+function onTimerResultsClose () {
+  showTimerResults.value = false
+  generateProblem()
+}
 
 function onOpenShop () {
   showShop.value = true
@@ -236,12 +280,25 @@ watch(showLevelVictory, (val) => {
       />
     </Transition>
 
+    <!-- Timer Results Overlay -->
+    <TimerResultsOverlay
+      :show="showTimerResults"
+      :coins="timer.stars.value"
+      :correct-count="timer.correctCount.value"
+      :high-score="timer.highScore.value"
+      :is-new-high-score="timer.correctCount.value > 0 && timer.correctCount.value === timer.highScore.value"
+      @close="onTimerResultsClose"
+    />
+
     <!-- ★ Score Header -->
     <ScoreHeader
       :stars="stars"
       :is-muted="isMuted"
+      :is-timer-mode="isTimerMode"
+      :time-left="timer.timeLeft.value"
       @toggle-mute="toggleMute"
       @open-shop="onOpenShop"
+      @start-sprint="handleSprintStart"
     />
 
     <!-- Middle: Challenge -->
