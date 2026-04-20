@@ -158,9 +158,13 @@ function onSubmit () {
     if (answer.value === '') return   // nothing to check
 
     const prob = timer.currentProblem.value
-    let correctAnswer
-    if (prob.operator === '+') correctAnswer = prob.a + prob.b
-    else correctAnswer = prob.a - prob.b   // timer mode is +/- only
+    const opMap = { '+': prob.a + prob.b, '-': prob.a - prob.b }
+    const correctAnswer = opMap[prob.operator]
+    if (correctAnswer === undefined) {
+      console.error(`[timer] Unexpected operator: ${prob.operator}`)
+      answer.value = ''
+      return
+    }
 
     if (Number(answer.value) === correctAnswer) {
       playCorrect()
