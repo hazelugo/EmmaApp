@@ -39,14 +39,19 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 - [x] 01-03-PLAN.md — Wire useShop into App.vue; add shop button to ScoreHeader; thread variantSrc prop through ChallengeZone & MascotPanel; end-to-end human-verify checkpoint
 
 ### Phase 2: Multiplication & Division
-**Goal**: Unlock multiplication at level 3 and division at level 5, with independent per-operator difficulty scaling using a `maxOperandByOperator` object.
+**Goal**: Unlock multiplication at level 3 and division at level 5, with independent per-operator difficulty scaling using a `maxOperandByOperator` object. Includes a one-time animated tutorial overlay per new operator and a mascot speech bubble hint when zero appears in any problem.
 **Depends on**: Nothing
 **Requirements**: MATH-01, MATH-02, MATH-03
 **Success Criteria** (what must be TRUE):
   1. Multiplication problems appear after level 3 threshold is reached
   2. Division problems appear after level 5 threshold is reached
   3. Each operator tracks its own difficulty independently
-**Plans**: TBD
+**Plans**: 5 plans
+- [ ] 02-01-PLAN.md — Wave 0: install vitest + jsdom, configure vite.config test.environment, scaffold useMathGame test file with failing placeholders
+- [ ] 02-02-PLAN.md — Wave 1: refactor useMathGame.js (maxOperandByOperator object, operator gate, quotient-first ÷, correctAnswer × ÷ branches, tutorial state machine, zeroHint computed) + fill test assertions
+- [ ] 02-03-PLAN.md — Wave 2: create OperatorTutorialOverlay.vue (new SFC, tap-to-advance animated tutorial, scoped tutorial-fade transition)
+- [ ] 02-04-PLAN.md — Wave 2: extend LevelIntroModal.vue (unlockedOperator prop + announcement line) and MascotPanel.vue (zeroHint prop + 3s auto-dismiss bubble)
+- [ ] 02-05-PLAN.md — Wave 3: wire App.vue (destructure new refs, import overlay, compute unlockedOperator, pass props) + extend ChallengeZone.vue with zeroHint bubble + human-verify end-to-end checkpoint
 
 ### Phase 3: Timer Mode
 **Goal**: Add a 60-second sprint challenge mode accessible from the game screen, using a new `useTimer` composable with unified star scoring.
