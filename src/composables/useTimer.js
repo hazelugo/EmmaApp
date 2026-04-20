@@ -42,6 +42,7 @@ export function useTimer () {
   const stars        = ref(0)          // coins earned this session (UI calls them "coins")
   const correctCount = ref(0)
   const highScore    = ref(getStorage(LS_HIGH_SCORE, 0))
+  const isNewRecord  = ref(false)      // true only when this session strictly beat the previous best
 
   /* ── Current Problem ────────────────────────────────────────── */
   const currentProblem = ref({ a: 0, b: 0, operator: '+' })
@@ -117,6 +118,9 @@ export function useTimer () {
     if (correctCount.value > highScore.value) {
       highScore.value = correctCount.value
       setStorage(LS_HIGH_SCORE, highScore.value)
+      isNewRecord.value = true   // strict improvement — set BEFORE isActive changes
+    } else {
+      isNewRecord.value = false  // tie or lower score is not a new record
     }
     isActive.value = false
   }
@@ -141,6 +145,7 @@ export function useTimer () {
     stars,          // internal name; UI renders as "coins"
     correctCount,
     highScore,
+    isNewRecord,    // true only when this session strictly beat the previous best
     currentProblem,
 
     // Actions

@@ -309,7 +309,7 @@ watch(showLevelVictory, (val) => {
       :coins="timer.stars.value"
       :correct-count="timer.correctCount.value"
       :high-score="timer.highScore.value"
-      :is-new-high-score="timer.correctCount.value > 0 && timer.correctCount.value === timer.highScore.value"
+      :is-new-high-score="timer.isNewRecord.value"
       @close="onTimerResultsClose"
     />
 
