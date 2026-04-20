@@ -2,11 +2,13 @@
 import marioCoinSrc from '../assets/mario-coin.png'
 
 defineProps({
-  stars:   { type: Number, default: 0 },
-  isMuted: { type: Boolean, default: false },
+  stars:       { type: Number,  default: 0 },
+  isMuted:     { type: Boolean, default: false },
+  isTimerMode: { type: Boolean, default: false },
+  timeLeft:    { type: Number,  default: 60 },
 })
 
-defineEmits(['toggle-mute', 'open-shop'])
+defineEmits(['toggle-mute', 'open-shop', 'start-sprint'])
 </script>
 
 <template>
@@ -27,15 +29,39 @@ defineEmits(['toggle-mute', 'open-shop'])
       </span>
     </div>
 
-    <!-- Title -->
-    <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md text-center leading-tight">
+    <!-- Title OR Timer Countdown -->
+    <h1
+      v-if="!isTimerMode"
+      class="text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md text-center leading-tight"
+    >
       Emma's Star World
     </h1>
+    <span
+      v-else
+      class="text-2xl md:text-3xl font-extrabold drop-shadow-md text-center leading-tight"
+      :class="timeLeft < 10 ? 'text-red-400 animate-pulse' : 'text-mushroom-white'"
+    >
+      &#x23F3; {{ timeLeft }}s
+    </span>
 
     <!-- Right Controls -->
     <div class="flex items-center gap-2">
-      <!-- Shop Entry -->
+      <!-- Sprint Button (only when not in timer mode) -->
       <button
+        v-if="!isTimerMode"
+        id="btn-sprint"
+        type="button"
+        class="btn-press flex items-center justify-center h-11 md:h-12 px-3 rounded-xl
+               hover:scale-110 transition-transform cursor-pointer"
+        aria-label="Start sprint timer"
+        @click="$emit('start-sprint')"
+      >
+        <span class="text-base md:text-lg font-bold text-mushroom-white drop-shadow-md">&#x23F1; Sprint</span>
+      </button>
+
+      <!-- Shop Entry (hidden during timer mode to keep UI simple) -->
+      <button
+        v-if="!isTimerMode"
         id="btn-shop"
         type="button"
         class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
