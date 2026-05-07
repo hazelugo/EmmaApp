@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: Ready to plan
-last_updated: "2026-04-20T23:40:34.855Z"
+status: In Progress
+last_updated: "2026-05-07T14:28:00.000Z"
 progress:
   total_phases: 14
-  completed_phases: 3
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
+  completed_phases: 4
+  total_plans: 14
+  completed_plans: 14
+  percent: 29
 ---
 
 # Project State
@@ -22,38 +22,34 @@ progress:
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
-
-- **Phase**: 3 - Timer Mode
-- **Task**: Planning complete
-- **Status**: Ready for execution
+- **Phase**: 4 - Sound Settings ✅ Complete
+- **Status**: Verified and approved
 
 ## Next Steps
 
-1. /execute 3
+1. `/execute 5` — PWA support (vite-plugin-pwa, install prompt, offline play)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 11
+- Total plans completed: 14
 - Average duration: —
-- Total execution time: —
 
 **By Phase:**
 
-| Phase | Plans | Total | Avg/Plan |
-|-------|-------|-------|----------|
-| 01 | 3 | - | - |
-| 02 | 5 | - | - |
-| 3 | 3 | - | - |
+| Phase | Plans | Status |
+|-------|-------|--------|
+| 01 | 3 | ✅ Complete |
+| 02 | 5 | ✅ Complete |
+| 03 | 3 | ✅ Complete |
+| 04 | 3 | ✅ Complete |
 
 ## Notes
 
-- Previous work (video cutscene system) lives in `.planning/legacy/` — Phases 1 & 2 complete, Phase 3 pending
-- 14 feature phases brainstormed on 2026-04-17; session report at `.planning/reports/20260417-session-report.md`
-- Star Shop brainstorm: `useShop.js` composable, 5 Tier-1 items, single-tap + 10s undo, `emma-shop-*` localStorage keys
+- Previous work (video cutscene system) lives in `.planning/legacy/`
 - All new features follow the established overlay pattern (v-if + Transition, no router)
-- Phase 2: vitest@3 + jsdom@25 require Map-backed localStorage mock in `setup.js` (added to setupFiles)
 - Phase 2: `difficulty.maxOperand` scalar fully replaced by `difficulty.maxOperandByOperator` object
+- Phase 4: `isMuted` and `volume` both persist via localStorage (`emma-mute`, `emma-volume`); mute ≠ volume=0 (distinct semantics); all SFX route through a master GainNode
+- Phase 4: Volume fill bar removed from SoundSettingsOverlay per user feedback (slider is sufficient)
+

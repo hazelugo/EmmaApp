@@ -92,14 +92,6 @@ watch(() => props.show, (val) => {
           </div>
         </div>
 
-        <!-- Visual volume bar -->
-        <div class="volume-bar-track" :class="{ dimmed: isMuted }">
-          <div
-            class="volume-bar-fill"
-            :style="{ width: (isMuted ? 0 : localVolume * 100) + '%' }"
-          ></div>
-        </div>
-
       </div>
     </div>
   </Transition>
@@ -277,23 +269,7 @@ watch(() => props.show, (val) => {
   text-align: right;
 }
 
-/* ── Visual Bar ───────────────────────────────────────────────── */
-.volume-bar-track {
-  height: 8px;
-  border-radius: 6px;
-  background: #1a1a2e;
-  border: 1.5px solid #ffd70066;
-  overflow: hidden;
-  transition: opacity 0.2s;
-}
-.volume-bar-track.dimmed { opacity: 0.35; }
 
-.volume-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #ffd700, #ffec6e);
-  border-radius: 6px;
-  transition: width 0.1s ease;
-}
 
 /* ── Transition ───────────────────────────────────────────────── */
 .settings-fade-enter-active,
