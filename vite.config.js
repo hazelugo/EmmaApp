@@ -38,11 +38,31 @@ export default defineConfig({
       },
 
       workbox: {
-        // Precache all JS, CSS, HTML, fonts, and common image types
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,mp3,webp}'],
+        // Precache only small/medium assets — JS, CSS, HTML, icons, SFX PNGs, fonts
+        // Large battle PNGs and theme MP3s are handled by runtime caching below
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
 
-        // Cache Google Fonts with a long-lived CacheFirst strategy
+        // Runtime caching: serves large assets from cache after first load
         runtimeCaching: [
+          // Large battle/cutscene PNGs — CacheFirst, keep up to 120 images
+          {
+            urlPattern: /\/assets\/.*\.png$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'emma-images',
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          // Theme MP3 files — CacheFirst, keep all 5 tracks
+          {
+            urlPattern: /\/assets\/.*\.mp3$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'emma-audio',
+              expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          // Google Fonts
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: 'CacheFirst',
