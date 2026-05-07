@@ -17,16 +17,30 @@ const CHARACTER_BGM = {
 /**
  * Web Audio API-based sound effects composable.
  * Nintendo / Mario-inspired synthesized sounds.
+ *
+ * Phase 4: Added master GainNode for volume control, separate from mute.
+ * Both isMuted and volume persist to localStorage.
  */
 
-const isMuted = ref(false)
+// ── Persistent state (module-level singletons) ─────────────────────────────
+const isMuted = ref(localStorage.getItem('emma-mute') === 'true')
+const volume  = ref(parseFloat(localStorage.getItem('emma-volume') ?? '0.7'))
+
 let currentBgmAudio = null
 let audioCtx = null
+let masterGain = null   // master gain node — all SFX and BGM route through this
 
+// ── Audio context ──────────────────────────────────────────────────────────
 function getContext () {
   if (!audioCtx) {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)()
+
+    // Create master gain node on first call and wire to destination
+    masterGain = audioCtx.createGain()
+    masterGain.gain.value = isMuted.value ? 0 : volume.value
+    masterGain.connect(audioCtx.destination)
   }
+
   // Resume if suspended (browser autoplay policy)
   if (audioCtx.state === 'suspended') {
     audioCtx.resume()
@@ -34,14 +48,36 @@ function getContext () {
   return audioCtx
 }
 
+// ── Volume control ─────────────────────────────────────────────────────────
+
+/**
+ * Set master volume (0–1). Distinct from mute — volume=0 is different from
+ * isMuted=true because mute also pauses BGM.
+ */
+function setVolume (v) {
+  const clamped = Math.min(1, Math.max(0, v))
+  volume.value = clamped
+  localStorage.setItem('emma-volume', clamped)
+
+  // Apply to master gain if audio context is already initialised
+  if (masterGain) {
+    masterGain.gain.value = isMuted.value ? 0 : clamped
+  }
+
+  // Apply to BGM audio element
+  if (currentBgmAudio) {
+    currentBgmAudio.volume = clamped
+  }
+}
+
 /**
  * Play a simple tone with an envelope.
  * @param {number} freq      – Frequency in Hz
  * @param {string} type      – OscillatorNode type: 'sine' | 'square' | 'triangle' | 'sawtooth'
  * @param {number} duration  – Duration in seconds
- * @param {number} volume    – Gain 0–1
+ * @param {number} gainAmt   – Gain 0–1 (relative; actual output scaled by master gain)
  */
-function playTone (freq, type = 'square', duration = 0.15, volume = 0.2) {
+function playTone (freq, type = 'square', duration = 0.15, gainAmt = 0.2) {
   if (isMuted.value) return
   const ctx = getContext()
   const osc = ctx.createOscillator()
@@ -52,12 +88,12 @@ function playTone (freq, type = 'square', duration = 0.15, volume = 0.2) {
 
   // Envelope: quick attack, sustain, smooth release
   gain.gain.setValueAtTime(0, ctx.currentTime)
-  gain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 0.01)
-  gain.gain.setValueAtTime(volume, ctx.currentTime + duration * 0.6)
+  gain.gain.linearRampToValueAtTime(gainAmt, ctx.currentTime + 0.01)
+  gain.gain.setValueAtTime(gainAmt, ctx.currentTime + duration * 0.6)
   gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
 
   osc.connect(gain)
-  gain.connect(ctx.destination)
+  gain.connect(masterGain)   // ← route through master gain (not directly to destination)
   osc.start(ctx.currentTime)
   osc.stop(ctx.currentTime + duration)
 }
@@ -113,14 +149,21 @@ function playLevelUp () {
   }, 520)
 }
 
-/** Toggle mute state */
+/** Toggle mute state — pauses/resumes BGM and silences master gain */
 function toggleMute () {
   isMuted.value = !isMuted.value
+  localStorage.setItem('emma-mute', isMuted.value)
+
+  // Apply mute to master gain immediately (no click if context exists)
+  if (masterGain) {
+    masterGain.gain.value = isMuted.value ? 0 : volume.value
+  }
+
   if (currentBgmAudio) {
     if (isMuted.value) {
       currentBgmAudio.pause()
     } else {
-      currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
+      currentBgmAudio.play().catch(e => console.error('BGM Autoplay blocked:', e))
     }
   }
 }
@@ -137,12 +180,12 @@ function playThemeMusic (characterId) {
 
   currentBgmAudio = new Audio(bgmSrc)
   currentBgmAudio.loop = true
-  currentBgmAudio.volume = 1.0
+  currentBgmAudio.volume = volume.value   // ← respect current volume
 
   if (!isMuted.value) {
     // Start muted briefly to avoid iOS pop, then unmute
     currentBgmAudio.muted = true
-    currentBgmAudio.play().catch(e => console.error("BGM Autoplay blocked:", e))
+    currentBgmAudio.play().catch(e => console.error('BGM Autoplay blocked:', e))
     setTimeout(() => {
       if (currentBgmAudio) currentBgmAudio.muted = false
     }, 150)
@@ -159,7 +202,9 @@ function stopThemeMusic () {
 export function useSound () {
   return {
     isMuted,
+    volume,
     toggleMute,
+    setVolume,
     playCorrect,
     playWrong,
     playTap,
