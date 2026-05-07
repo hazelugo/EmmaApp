@@ -191,4 +191,191 @@ describe('useMathGame', () => {
     game.currentProblem.b = 4
     expect(game.correctAnswer.value).toBe(3)
   })
+
+  /* ── checkAnswer: core paths ─────────────────────────────── */
+
+  it('checkAnswer: returns null when answer is empty', () => {
+    const game = useMathGame()
+    game.answer.value = ''
+    expect(game.checkAnswer()).toBeNull()
+  })
+
+  it('checkAnswer: returns null when feedback is already set (locked)', () => {
+    const game = useMathGame()
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 2
+    game.currentProblem.b = 2
+    game.answer.value = '4'
+    game.checkAnswer()                   // sets feedback='correct'
+    game.answer.value = '4'
+    expect(game.checkAnswer()).toBeNull() // still locked
+  })
+
+  it('checkAnswer: correct answer increments stars, streak, and returns "correct"', () => {
+    const game = useMathGame()
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 3
+    game.currentProblem.b = 4
+    game.answer.value = '7'
+    const result = game.checkAnswer()
+    expect(result).toBe('correct')
+    expect(game.stars.value).toBe(1)
+    expect(game.streak.value).toBe(1)
+    expect(localStorage.getItem('emma-stars')).toBe('1')
+  })
+
+  it('checkAnswer: wrong answer resets streak, sets feedback="wrong"', () => {
+    const game = useMathGame()
+    game.streak.value = 5
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 2
+    game.currentProblem.b = 2
+    game.answer.value = '99'
+    const result = game.checkAnswer()
+    expect(result).toBe('wrong')
+    expect(game.streak.value).toBe(0)
+    expect(game.feedback.value).toBe('wrong')
+  })
+
+  it('checkAnswer: triggers level victory at every 10-star milestone', () => {
+    const game = useMathGame()
+    game.stars.value = 9
+    game.lastMilestone = 0
+    // Force a correct answer at star #10
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 3
+    game.currentProblem.b = 4
+    game.answer.value = String(game.correctAnswer.value)
+    game.checkAnswer()
+    expect(game.showLevelVictory.value).toBe(true)
+    expect(game.level.value).toBe(2)          // advanced from 1 → 2
+  })
+
+  /* ── clearFeedback ─────────────────────────────────────── */
+
+  it('clearFeedback: resets feedback to empty string', () => {
+    const game = useMathGame()
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 1
+    game.currentProblem.b = 1
+    game.answer.value = '99'
+    game.checkAnswer()
+    expect(game.feedback.value).toBe('wrong')
+    game.clearFeedback()
+    expect(game.feedback.value).toBe('')
+  })
+
+  /* ── appendDigit & backspace ───────────────────────────── */
+
+  it('appendDigit: appends digits up to 3 characters', () => {
+    const game = useMathGame()
+    expect(game.appendDigit(1)).toBe(true)
+    expect(game.appendDigit(2)).toBe(true)
+    expect(game.appendDigit(3)).toBe(true)
+    expect(game.appendDigit(4)).toBe(false)   // max 3
+    expect(game.answer.value).toBe('123')
+  })
+
+  it('appendDigit: returns false and does nothing while feedback is set', () => {
+    const game = useMathGame()
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 1
+    game.currentProblem.b = 1
+    game.answer.value = '9'
+    game.checkAnswer()                        // sets feedback='wrong'
+    expect(game.appendDigit(5)).toBe(false)
+  })
+
+  it('backspace: removes last character; returns false when feedback locked', () => {
+    const game = useMathGame()
+    game.answer.value = '42'
+    expect(game.backspace()).toBe(true)
+    expect(game.answer.value).toBe('4')
+
+    // Lock via feedback
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 1
+    game.currentProblem.b = 1
+    game.answer.value = '9'
+    game.checkAnswer()
+    expect(game.backspace()).toBe(false)
+  })
+
+  /* ── creditTimerCoins ──────────────────────────────────── */
+
+  it('creditTimerCoins: adds coins to stars and persists', () => {
+    const game = useMathGame()
+    game.creditTimerCoins(5)
+    expect(game.stars.value).toBe(5)
+    expect(localStorage.getItem('emma-stars')).toBe('5')
+  })
+
+  it('creditTimerCoins: skips when amount <= 0', () => {
+    const game = useMathGame()
+    game.creditTimerCoins(0)
+    game.creditTimerCoins(-3)
+    expect(game.stars.value).toBe(0)
+  })
+
+  it('creditTimerCoins: triggers level victory at 10-star milestone', () => {
+    const game = useMathGame()
+    game.stars.value = 9
+    game.creditTimerCoins(1)
+    expect(game.showLevelVictory.value).toBe(true)
+    expect(game.level.value).toBe(2)
+  })
+
+  /* ── getCutsceneVideoPath ──────────────────────────────── */
+
+  it('getCutsceneVideoPath: returns a string path', () => {
+    const game = useMathGame()
+    const path = game.getCutsceneVideoPath('peach', 1)
+    expect(typeof path).toBe('string')
+    expect(path.length).toBeGreaterThan(0)
+  })
+
+  /* ── resetGame ─────────────────────────────────────────── */
+
+  it('resetGame: resets stars, streak, level, and difficulty to defaults', () => {
+    const game = useMathGame()
+    // Dirty state
+    game.stars.value = 42
+    game.streak.value = 7
+    game.level.value = 5
+    game.difficulty.maxOperandByOperator['+'] = 18
+
+    game.resetGame()
+
+    expect(game.stars.value).toBe(0)
+    expect(game.streak.value).toBe(0)
+    expect(game.level.value).toBe(1)
+    expect(game.difficulty.maxOperandByOperator['+']).toBe(10)
+    expect(game.difficulty.maxOperandByOperator['×']).toBe(3)
+    expect(localStorage.getItem('emma-stars')).toBe('0')
+  })
+
+  it('resetGame: clears tutorial flags in localStorage', () => {
+    localStorage.setItem('emma-tutorial-multiply-seen', '1')
+    localStorage.setItem('emma-tutorial-divide-seen', '1')
+    const game = useMathGame()
+    game.resetGame()
+    // After reset, flags are cleared so tutorials would fire again (falsy)
+    expect(localStorage.getItem('emma-tutorial-multiply-seen')).toBeFalsy()
+    expect(localStorage.getItem('emma-tutorial-divide-seen')).toBeFalsy()
+  })
+
+  /* ── adjustDifficulty: decrease branch ────────────────── */
+
+  it('adjustDifficulty: decreases maxOperand when success rate < 60%', () => {
+    const game = useMathGame()
+    game.difficulty.maxOperandByOperator['+'] = 10
+    // 4 wrong out of 10 → 40% success rate → should decrease
+    game.difficulty.history = [false, false, false, false, false, false, true, true, true, true]
+    game.currentProblem.operator = '+'
+    game.currentProblem.a = 2
+    game.currentProblem.b = 3
+    game.answer.value = '99' // wrong
+    game.checkAnswer()
+    expect(game.difficulty.maxOperandByOperator['+']).toBeLessThan(10)
+  })
 })
