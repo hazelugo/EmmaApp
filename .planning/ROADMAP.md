@@ -11,7 +11,7 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 - [x] **Phase 3: Timer Mode** — 60-second sprint challenge mode accessible from the main game screen (completed 2026-04-20)
 - [x] **Phase 4: Sound Settings** — Persistent mute state with volume slider; modal from mute button (completed 2026-05-07)
 - [x] **Phase 5: PWA** — Progressive Web App support for mobile install and offline play (completed 2026-05-07)
-- [ ] **Phase 6: Unit Testing** — Vitest unit tests for useMathGame composable at 85%+ coverage
+- [x] **Phase 6: Unit Testing** — Vitest unit tests for useMathGame composable at 85%+ coverage (completed 2026-05-07)
 - [ ] **Phase 7: Themed Backgrounds** — Difficulty-driven background themes (4 CSS gradient themes, 800ms fade)
 - [ ] **Phase 8: More Mascots** — Additional characters unlock at star thresholds (6 new Nintendo characters)
 - [ ] **Phase 9: Story-Driven Progression** — 7-world arc with text dialogue cutscenes and power-ups
@@ -97,7 +97,9 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 **Success Criteria** (what must be TRUE):
   1. `npm run test` runs and passes
   2. useMathGame composable is covered at 85%+ line coverage
-**Plans**: TBD
+**Status**: ✅ Complete (2026-05-07)
+**Plans**: 1 plan
+- [x] Wave 1 — Install @vitest/coverage-v8@3.2.4; add 16 targeted tests to useMathGame.test.js; achieved 95.4% stmt / 86.4% branch / 100% func; add coverage/ to .gitignore
 
 ### Phase 7: Themed Backgrounds
 **Goal**: Difficulty-driven background themes (4 CSS gradient themes mapped to maxOperand ranges) with 800ms fade transitions using pure CSS — no image assets.

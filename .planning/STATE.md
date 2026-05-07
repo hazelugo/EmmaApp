@@ -6,10 +6,10 @@ status: In Progress
 last_updated: "2026-05-07T22:53:00.000Z"
 progress:
   total_phases: 14
-  completed_phases: 5
-  total_plans: 17
-  completed_plans: 17
-  percent: 36
+  completed_phases: 6
+  total_plans: 18
+  completed_plans: 18
+  percent: 43
 ---
 
 # Project State
@@ -22,12 +22,12 @@ progress:
 
 ## Current Position
 
-- **Phase**: 5 - PWA ✅ Complete
-- **Status**: Verified and committed
+- **Phase**: 6 - Unit Testing ✅ Complete
+- **Status**: 27/27 tests passing, 95.4% coverage
 
 ## Next Steps
 
-1. `/execute 6` — Vitest unit tests for useMathGame (85%+ coverage)
+1. `/execute 7` — Themed Backgrounds (CSS gradient themes, 800ms fade)
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ progress:
 | 03 | 3 | ✅ Complete |
 | 04 | 3 | ✅ Complete |
 | 05 | 3 | ✅ Complete |
+| 06 | 1 | ✅ Complete |
 
 ## Notes
 
@@ -56,4 +57,6 @@ progress:
 - Phase 5: Workbox cannot precache large assets (>2 MiB); large battle PNGs + theme MP3s use runtime CacheFirst instead
 - Phase 5: `emma-pwa-dismissed` localStorage key prevents repeat prompts after dismiss or install
 - Phase 5: `beforeinstallprompt` is only fired by browsers when PWA criteria are met (HTTPS, manifest, SW); won't appear in plain `npm run dev`
+- Phase 6: @vitest/coverage-v8 must match vitest version exactly (3.2.4); use `--legacy-peer-deps` to install
+- Phase 6: coverage/ dir added to .gitignore to prevent HTML report files from being tracked
 
