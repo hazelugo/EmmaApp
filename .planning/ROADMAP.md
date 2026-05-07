@@ -10,7 +10,7 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 - [x] **Phase 2: Multiplication & Division** — Unlock multiplication at level 3, division at level 5, with per-operator difficulty scaling
 - [x] **Phase 3: Timer Mode** — 60-second sprint challenge mode accessible from the main game screen (completed 2026-04-20)
 - [x] **Phase 4: Sound Settings** — Persistent mute state with volume slider; modal from mute button (completed 2026-05-07)
-- [ ] **Phase 5: PWA** — Progressive Web App support for mobile install and offline play
+- [x] **Phase 5: PWA** — Progressive Web App support for mobile install and offline play (completed 2026-05-07)
 - [ ] **Phase 6: Unit Testing** — Vitest unit tests for useMathGame composable at 85%+ coverage
 - [ ] **Phase 7: Themed Backgrounds** — Difficulty-driven background themes (4 CSS gradient themes, 800ms fade)
 - [ ] **Phase 8: More Mascots** — Additional characters unlock at star thresholds (6 new Nintendo characters)
@@ -84,7 +84,11 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 **Success Criteria** (what must be TRUE):
   1. App can be installed on mobile devices from the browser
   2. App works offline after first load
-**Plans**: TBD
+**Status**: ✅ Complete (2026-05-07)
+**Plans**: 3 waves
+- [x] Wave 1 — Install vite-plugin-pwa, generate PWA icons (192+512px), configure manifest + Workbox (precache JS/CSS/SVG; runtime CacheFirst for large PNGs + MP3s + Google Fonts)
+- [x] Wave 2 — PWAInstallPrompt.vue component (fixed bottom banner, Mario-gold border, slide-up transition)
+- [x] Wave 3 — Wire into App.vue: beforeinstallprompt capture, 60s timer, install/dismiss with localStorage persistence
 
 ### Phase 6: Unit Testing
 **Goal**: Vitest + jsdom unit tests for useMathGame composable; raw composable calls (no vue/test-utils); 10 prioritized test cases; 85% coverage target.
