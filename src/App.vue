@@ -10,8 +10,9 @@ import ShopOverlay from './components/ShopOverlay.vue'
 import OperatorTutorialOverlay from './components/OperatorTutorialOverlay.vue'
 import TimerResultsOverlay from './components/TimerResultsOverlay.vue'
 import SoundSettingsOverlay from './components/SoundSettingsOverlay.vue'
+import PWAInstallPrompt from './components/PWAInstallPrompt.vue'
 
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import confetti from 'canvas-confetti'
 
 import { useMathGame }   from './composables/useMathGame.js'
@@ -48,6 +49,49 @@ const showSoundSettings = ref(false)
 function onOpenSoundSettings () { showSoundSettings.value = true }
 function onCloseSoundSettings () { showSoundSettings.value = false }
 function onSetVolume (v) { setVolume(v) }
+
+/* ── PWA Install Prompt ──────────────────────────────────────── */
+const showPWAPrompt    = ref(false)
+let   deferredPrompt   = null
+let   installTimer     = null
+
+onMounted(() => {
+  // Don't show if already dismissed or installed
+  if (localStorage.getItem('emma-pwa-dismissed')) return
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()             // stop browser's native mini-bar
+    deferredPrompt = e
+    // Show our custom prompt after 60 seconds of engagement
+    installTimer = setTimeout(() => { showPWAPrompt.value = true }, 60_000)
+  })
+
+  // If already installed, make sure prompt stays hidden
+  window.addEventListener('appinstalled', () => {
+    showPWAPrompt.value = false
+    clearTimeout(installTimer)
+    localStorage.setItem('emma-pwa-dismissed', '1')
+  })
+})
+
+onBeforeUnmount(() => clearTimeout(installTimer))
+
+async function onPWAInstall () {
+  if (!deferredPrompt) return
+  deferredPrompt.prompt()
+  const { outcome } = await deferredPrompt.userChoice
+  if (outcome === 'accepted') {
+    localStorage.setItem('emma-pwa-dismissed', '1')
+  }
+  deferredPrompt = null
+  showPWAPrompt.value = false
+}
+
+function onPWADismiss () {
+  showPWAPrompt.value = false
+  clearTimeout(installTimer)
+  localStorage.setItem('emma-pwa-dismissed', '1')
+}
 
 /* ── Shop ─────────────────────────────────────────────────────── */
 const {
@@ -335,6 +379,13 @@ watch(showLevelVictory, (val) => {
       :high-score="timer.highScore.value"
       :is-new-high-score="timer.isNewRecord.value"
       @close="onTimerResultsClose"
+    />
+
+    <!-- PWA Install Prompt (appears after 60s if installable) -->
+    <PWAInstallPrompt
+      :show="showPWAPrompt"
+      @install="onPWAInstall"
+      @dismiss="onPWADismiss"
     />
 
     <!-- ★ Score Header -->
