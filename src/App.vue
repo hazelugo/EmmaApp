@@ -9,6 +9,7 @@ import LevelVictoryModal from './components/LevelVictoryModal.vue'
 import ShopOverlay from './components/ShopOverlay.vue'
 import OperatorTutorialOverlay from './components/OperatorTutorialOverlay.vue'
 import TimerResultsOverlay from './components/TimerResultsOverlay.vue'
+import SoundSettingsOverlay from './components/SoundSettingsOverlay.vue'
 
 import { ref, computed, watch } from 'vue'
 import confetti from 'canvas-confetti'
@@ -40,7 +41,13 @@ const timer = useTimer()
 const isTimerMode       = ref(false)
 const showTimerResults  = ref(false)
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+const { isMuted, volume, toggleMute, setVolume, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+
+/* ── Sound Settings ────────────────────────────────────────────── */
+const showSoundSettings = ref(false)
+function onOpenSoundSettings () { showSoundSettings.value = true }
+function onCloseSoundSettings () { showSoundSettings.value = false }
+function onSetVolume (v) { setVolume(v) }
 
 /* ── Shop ─────────────────────────────────────────────────────── */
 const {
@@ -307,6 +314,19 @@ watch(showLevelVictory, (val) => {
       />
     </Transition>
 
+    <!-- Sound Settings Overlay -->
+    <Transition name="fade">
+      <SoundSettingsOverlay
+        v-if="showSoundSettings"
+        :show="showSoundSettings"
+        :is-muted="isMuted"
+        :volume="volume"
+        @close="onCloseSoundSettings"
+        @toggle-mute="toggleMute"
+        @set-volume="onSetVolume"
+      />
+    </Transition>
+
     <!-- Timer Results Overlay -->
     <TimerResultsOverlay
       :show="showTimerResults"
@@ -326,6 +346,7 @@ watch(showLevelVictory, (val) => {
       @toggle-mute="toggleMute"
       @open-shop="onOpenShop"
       @start-sprint="handleSprintStart"
+      @open-sound-settings="onOpenSoundSettings"
     />
 
     <!-- Middle: Challenge -->

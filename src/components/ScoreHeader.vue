@@ -8,7 +8,7 @@ defineProps({
   timeLeft:    { type: Number,  default: 60 },
 })
 
-defineEmits(['toggle-mute', 'open-shop', 'start-sprint'])
+defineEmits(['toggle-mute', 'open-shop', 'start-sprint', 'open-sound-settings'])
 </script>
 
 <template>
@@ -72,13 +72,13 @@ defineEmits(['toggle-mute', 'open-shop', 'start-sprint'])
         <span class="text-xl md:text-2xl drop-shadow-md">🏪</span>
       </button>
 
-      <!-- Mute Toggle -->
+      <!-- Mute / Sound Settings button — opens Sound Settings overlay -->
       <button
         id="btn-mute"
         class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
                rounded-xl hover:scale-110 transition-transform cursor-pointer"
-        :aria-label="isMuted ? 'Unmute sounds' : 'Mute sounds'"
-        @click="$emit('toggle-mute')"
+        :aria-label="isMuted ? 'Open sound settings (currently muted)' : 'Open sound settings'"
+        @click="$emit('open-sound-settings')"
       >
         <span class="text-xl md:text-2xl drop-shadow-md">{{ isMuted ? '🔇' : '🔊' }}</span>
       </button>
