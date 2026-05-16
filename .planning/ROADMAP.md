@@ -109,7 +109,9 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
   1. Background changes when difficulty threshold is crossed
   2. Transition is 800ms and smooth
   3. All 4 themes are visually distinct
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 07-01-PLAN.md — Wave 1: pure pickDifficultyTheme utility + Vitest tests + .difficulty-bg CSS classes (4 theme variants, 800ms transition)
+- [ ] 07-02-PLAN.md — Wave 2: wire .difficulty-bg layer + difficultyThemeClass computed into App.vue, neutralize body gradient, human-verify checkpoint
 
 ### Phase 8: More Mascots
 **Goal**: 6 new Nintendo-inspired mascot characters unlock at star thresholds; unlock state computed from stars at runtime (not stored separately).
@@ -118,7 +120,9 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
 **Success Criteria** (what must be TRUE):
   1. New characters appear in CharacterSelect at correct star thresholds
   2. Unlock state is recomputed from star count (no extra localStorage keys)
-**Plans**: TBD
+**Plans**: 2 plans
+- [ ] 08-01-PLAN.md - Wave 1: extend CharacterSelect.vue to 10 chars with unlockAt thresholds (25/50/75/100/150/200), 5-col grid, locked styling + BGM fallback in useSound.js
+- [ ] 08-02-PLAN.md - Wave 2: wire :stars prop in App.vue + human-verify end-to-end checkpoint
 
 ### Phase 9: Story-Driven Progression
 **Goal**: New `useStory.js` composable with 7-world arc; text dialogue cutscenes between levels; power-ups earned per world.
@@ -128,7 +132,10 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
   1. Story world progression advances as levels are completed
   2. Text dialogue cutscenes display between levels
   3. Power-ups are earned and applied per world
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 09-01-PLAN.md — Wave 1: failing useStory.test.js stubs covering STORY-01a/b/c/d (Wave 0 gap from VALIDATION.md)
+- [ ] 09-02-PLAN.md — Wave 2: implement useStory.js (7 worlds, 7 power-ups, character-specific dialogue + generic fallback) and DialogueCutsceneOverlay.vue (z-[225], YOU WIN! finale)
+- [ ] 09-03-PLAN.md — Wave 3: wire useStory + overlay into App.vue (onVictoryNext hook, doubleStars via creditTimerCoins, World 7 finale, resetStory on character change) + human-verify checkpoint
 
 ### Phase 10: Mini-Games
 **Goal**: `useMiniGame.js` wrapper with 3 mini-games (Math Dash, Shape Match, Jump Sequence) that trigger every 5–7 correct answers.
@@ -138,7 +145,11 @@ Feature expansion roadmap for Emma's Star World, a Nintendo-inspired children's 
   1. Mini-game triggers after 5–7 consecutive correct answers
   2. All 3 mini-games are playable
   3. Mini-game result feeds back to the main game flow
-**Plans**: TBD
+**Plans**: 4 plans
+- [ ] 10-01-PLAN.md — Wave 1: failing useMiniGame.test.js stubs (MINI-01a/b/c/d/f/g; absolute-threshold regression for D-01)
+- [ ] 10-02-PLAN.md — Wave 2: implement useMiniGame.js (absolute threshold per D-01), MiniGameOverlay shell (z-[250]), MathDashGame SFC with Skip (D-03)
+- [ ] 10-03-PLAN.md — Wave 3: ShapeMatchGame SFC + JumpSequenceGame SFC (each with Skip per D-03, onUnmounted timer cleanup); uncomment branches in MiniGameOverlay
+- [ ] 10-04-PLAN.md — Wave 4: wire useMiniGame into App.vue (streak watch, miniTriggered guard, onMiniGameDone routes bonus through creditTimerCoins per D-02, resetMiniGame on character change) + human-verify end-to-end checkpoint
 
 ### Phase 11: Personalized Mascot Interactions
 **Goal**: 9 reaction states in useMathGame.js; `useMascotLines.js` speech bubble pool; CSS filter animations for mascot reactions.

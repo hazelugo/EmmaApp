@@ -463,22 +463,16 @@ function playSequence(seq) {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **What happens to the in-progress streak when a mini-game triggers?**
-   - What we know: `streak` in `useMathGame` is not reset on mini-game entry (mini-games are a reward, not an interruption penalty).
-   - What's unclear: Should streak continue counting during the mini-game, or pause?
-   - Recommendation: Pause streak (don't increment) during mini-game; resume from same value when mini-game ends. Since `checkAnswer()` is not called during mini-games, streak naturally pauses — no code change needed.
+   - RESOLVED — Streak naturally pauses (checkAnswer is not called during mini-games). No code change needed. Streak resumes from same value when mini-game ends.
 
 2. **Should mini-game results (win/lose history) be persisted?**
-   - What we know: Timer mode high score is persisted (`emma-timer-best`). Mini-game results are not mentioned in MINI-01.
-   - What's unclear: Whether an aggregate win-rate or play count should persist.
-   - Recommendation: No persistence for Phase 10. MINI-01 only requires playability and result feedback. Persistence can be added in Phase 12 (Reward System).
+   - RESOLVED — No persistence in Phase 10. Persistence deferred to Phase 12 (Reward System). MINI-01 requires only playability and result feedback.
 
 3. **Can the player skip / dismiss a mini-game?**
-   - What we know: Timer mode and tutorial both require completion (no early exit). MINI-01 doesn't specify.
-   - What's unclear: Whether a skip button is required.
-   - Recommendation: Include a "Skip" tap target (small, bottom-right, low visual priority). Children may get stuck; a skip prevents frustration. Skip counts as `{ won: false, bonus: 0 }` result.
+   - RESOLVED — Include a "Skip" tap target (small, bottom-right, low visual priority). Skip counts as `{ won: false, bonus: 0 }` result to prevent child frustration.
 
 ---
 

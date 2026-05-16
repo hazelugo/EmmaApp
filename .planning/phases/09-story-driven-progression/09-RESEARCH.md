@@ -328,22 +328,16 @@ creditTimerCoins(1)  // milestone-safe; won't double-fire if the boundary is cro
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Power-up types and balance**
-   - What we know: Requirements say "power-ups earned per world" but do not define types
-   - What's unclear: Which 7 power-ups (one per world)? Are they cumulative or replaced?
-   - Recommendation: Propose concrete set to user before planning: e.g., World 1: 2x Stars, World 2: Hint Bubble, World 3: Skip Problem, World 4: Freeze Timer, World 5: Triple Stars, World 6: Answer Shield, World 7: Super Mode. Planner should leave this as a discretion choice or surface it for user confirmation.
+   - RESOLVED — 7 power-ups (one per world): Double Stars, Time Freeze, Hint, Skip Question, Star Shield, Streak Saver, Bonus Round (user decision 2026-05-16)
 
 2. **Cutscene dialogue content**
-   - What we know: 7 worlds, each character has a distinct enemy arc already in useLevelTheme.js
-   - What's unclear: Should dialogue be character-specific (Peach says different things than Daisy) or generic?
-   - Recommendation: Start with generic world dialogue (not character-specific) to keep `WORLD_DATA` flat. Character name can be injected via a `character` prop on the overlay.
+   - RESOLVED — Character-specific dialogue. Each character (Peach, Daisy, Rosalina, Toad + new Phase 8 chars) gets their own dialogue lines per world. `WORLD_DATA` keyed by character id. (user decision 2026-05-16)
 
 3. **Does cutscene fire on World 7 (final boss)?**
-   - What we know: Current `onVictoryNext` in App.vue branches on `completedLevel.value < 7` — level 7 skips to `generateProblem()`
-   - What's unclear: Should defeating Bowser show a victory cutscene before "PLAY AGAIN"?
-   - Recommendation: Yes — this is the climax. Fire a special "you saved the kingdom!" dialogue before the play-again flow. The planner should add this case.
+   - RESOLVED — Yes, special "YOU WIN!" victory cutscene fires before Play Again flow after completing Level 7. (user decision 2026-05-16)
 
 ---
 

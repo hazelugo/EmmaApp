@@ -309,27 +309,19 @@ const src = CHARACTER_BGM[id] || CHARACTER_BGM['title']
 | A5 | BGM falls back to title theme for new characters | Architecture Patterns | Could also fall back to any existing character theme |
 | A6 | Grid layout stays at 2-col mobile / adjusts for 10 chars desktop | Common Pitfalls | Layout decision needed; may require CSS change |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Which 6 characters?**
-   - What we know: "Nintendo-inspired"; existing 4 are Peach, Daisy, Rosalina, Toad
-   - What's unclear: Exact identities — Yoshi, Luigi, Wario, Waluigi, Birdo, Bowser Jr., Boo, Nabbit, Toadette are all candidates
-   - Recommendation: Decide before planning; affects id names, colors, and asset needs
+   - RESOLVED — Yoshi, Luigi, Bowser, Birdo, Toadette, Boo (user decision 2026-05-16)
 
 2. **Star thresholds?**
-   - What we know: Phase goal says "unlock at star thresholds" — no specific numbers given
-   - What's unclear: Target thresholds for each of the 6 new characters
-   - Recommendation: Choose simple round numbers; suggest 25/50/75/100/150/200 as a starting point
+   - RESOLVED — 25 / 50 / 75 / 100 / 150 / 200 stars (user decision 2026-05-16)
 
 3. **Will PNG images be provided for new characters?**
-   - What we know: Original characters all have PNG imports; Toad has a PNG; emoji fallback exists
-   - What's unclear: Whether Hector will generate/provide mascot PNGs for new characters
-   - Recommendation: Plan for emoji-only first (zero asset dependency), document as easily upgradeable to PNG
+   - RESOLVED — Placeholder art now (import a placeholder PNG path), real PNGs swapped in later. Use the existing Toad emoji-fallback pattern as the render path until real assets arrive.
 
 4. **Grid layout for 10 characters?**
-   - What we know: Current layout is `grid-cols-2 md:grid-cols-4`
-   - What's unclear: Whether 10 characters should be 2 rows of 5, or a different grouping
-   - Recommendation: `grid-cols-2 md:grid-cols-5` for 10 items (2 even rows on desktop)
+   - RESOLVED — `grid-cols-2 md:grid-cols-5` for 2 even rows of 5 on desktop.
 
 ## Environment Availability
 

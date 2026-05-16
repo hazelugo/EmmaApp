@@ -361,22 +361,16 @@ body {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Gradient transition compatibility across browsers (Chrome, Safari, Firefox mobile)**
-   - What we know: CSS can interpolate same-structure gradients. All 4 themes are designed with 4 stops.
-   - What's unclear: Whether Safari 16+ on iOS reliably interpolates `background` gradients or still snaps.
-   - Recommendation: Test in dev with Safari on iOS. If it snaps, switch to the `opacity` layer approach (two `.difficulty-bg` divs, one fades out while the other fades in).
+   - RESOLVED — All 4 themes use identical 4-stop `180deg` gradient structure to satisfy CSS interpolation requirements. Safari gap acknowledged and covered by human-verify checkpoint in Plan 07-02 Task 3 (if snap is observed, fallback to opacity-layer approach is documented).
 
 2. **Which difficulty signal to use: `+` operator only, or `Math.max` across all operators?**
-   - What we know: `+` is always active; `×` and `÷` are gated by level.
-   - What's unclear: User intent — should a player who primarily hits multiplication problems see theme progression?
-   - Recommendation: Use `Math.max` across all operators for the most responsive experience. If it feels too jumpy, fall back to `+` only.
+   - RESOLVED — Using `Math.max` across all operators via `pickMaxDifficultyTheme`. This ensures players focused on multiplication also see theme progression.
 
 3. **Body background conflict: remove body gradient entirely or keep as fallback?**
-   - What we know: `body` currently owns the only background; the new `.difficulty-bg` will be `position: fixed; z-index: -1`.
-   - What's unclear: Whether removing the body gradient breaks anything (overlays, modals, etc.).
-   - Recommendation: Set `body { background: none }` and move full gradient responsibility to `.difficulty-bg`. This is clean and avoids stacking issues.
+   - RESOLVED — Setting `body { background: none }` in Plan 07-02 Task 2. Full gradient responsibility moves to `.difficulty-bg`. Cloud pseudo-elements (`body::before/::after`) are unaffected.
 
 ---
 
