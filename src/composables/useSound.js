@@ -166,14 +166,7 @@ function stopThemeMusic() {
  * Swap in your own Mario coin / power-up MP3 here.
  */
 function playSuccessMP3() {
-  if (isMuted.value) return
-  console.log('--- SUCCESS MP3 PLACEHOLDER ---')
-  /*
-     To link an actual MP3 (e.g. a Mario coin .mp3):
-     const audio = new Audio('/sounds/coin.mp3')
-     audio.volume = 0.5
-     audio.play().catch(e => console.error("Sound failed:", e))
-  */
+  // placeholder — swap in an MP3 path here when available
 }
 
 export function useSound() {

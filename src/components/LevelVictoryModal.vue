@@ -113,9 +113,9 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
     <div
       v-if="show"
       class="victory-overlay"
-      style="background: #000;"
+      :style="bgStyle"
     >
-      <!-- Background Image (FullScreen) -->
+      <!-- Background Image (FullScreen) — only when artwork is available -->
       <img
         v-if="theme?.victoryImage"
         :src="theme?.victoryImage"
@@ -124,7 +124,16 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
         :class="{ 'opacity-100': showArt, 'opacity-0': !showArt }"
       />
 
-      <!-- Content overly at bottom -->
+      <!-- Text overlay for art-free characters (e.g. Toad) -->
+      <div
+        v-if="!theme?.victoryImage && showText"
+        class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 text-block text-in"
+      >
+        <h2 class="victory-title">WORLD CLEAR!</h2>
+        <p class="victory-sub">{{ theme?.victoryText }}</p>
+      </div>
+
+      <!-- Content overlay at bottom -->
       <div class="relative z-10 flex flex-col items-center justify-end h-full w-full pb-20 md:pb-32">
         <!-- Next World / Play Again button -->
         <button

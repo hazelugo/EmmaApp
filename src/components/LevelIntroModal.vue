@@ -99,9 +99,9 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
     <div
       v-if="show"
       class="intro-overlay"
-      style="background: #000;"
+      :style="bgStyle"
     >
-      <!-- Background Image (FullScreen) -->
+      <!-- Background Image (FullScreen) — only when artwork is available -->
       <img
         v-if="theme?.enemyImage"
         :src="theme?.enemyImage"
@@ -110,7 +110,17 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
         :class="{ 'opacity-100': showEnemy, 'opacity-0': !showEnemy }"
       />
 
-      <!-- Content overly at bottom -->
+      <!-- Text overlay for art-free characters (e.g. Toad) -->
+      <div
+        v-if="!theme?.enemyImage && showText"
+        class="absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 text-block text-in"
+      >
+        <p class="vs-text">⚔️ BATTLE!</p>
+        <h2 class="enemy-name">{{ theme?.enemyName }}</h2>
+        <p class="flavor-text">{{ theme?.flavorText }}</p>
+      </div>
+
+      <!-- Content overlay at bottom -->
       <div class="relative z-10 flex flex-col items-center justify-end h-full w-full pb-20 md:pb-32">
         <!-- LET'S GO button -->
         <button
@@ -119,7 +129,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
           @click="onStart"
           id="level-intro-start-btn"
         >
-          LET'S GO! 
+          LET'S GO!
           <img :src="starSrc" alt="Star" class="w-6 h-6 md:w-8 md:h-8 animate-pulse drop-shadow-md" style="image-rendering: pixelated;" />
         </button>
       </div>

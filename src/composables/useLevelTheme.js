@@ -101,7 +101,7 @@ const PEACH_THEMES = {
     bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
     victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
     musicId:    'forest',
-    flavorText: 'Hammer Bro means business!',
+    flavorText: 'Hammer Bro means business! Get ready to multiply! ×',
     victoryText: 'Hammer Bro crushed! 🔨',
   },
   5: {
@@ -174,7 +174,7 @@ const DAISY_THEMES = {
     bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
     victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
     musicId:    'forest',
-    flavorText: 'Angry Wigglers ahead!',
+    flavorText: 'Angry Wigglers ahead! Get ready to multiply! ×',
     victoryText: 'Wigglers calmed down! 🐛',
   },
   5: {
@@ -247,7 +247,7 @@ const ROSALINA_THEMES = {
     bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
     victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
     musicId:    'forest',
-    flavorText: 'Major Burrows digs in!',
+    flavorText: 'Major Burrows digs in! Get ready to multiply! ×',
     victoryText: 'Major Burrows buried! 🌌',
   },
   5: {
@@ -282,10 +282,84 @@ const ROSALINA_THEMES = {
   },
 }
 
+const TOAD_THEMES = {
+  1: {
+    enemyName:    'Goomba',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#6dd5fa', mid: '#87ceeb', bottom: '#7ADB7E' },
+    victoryBg: { top: '#FFD700', mid: '#FFF176', bottom: '#7ADB7E' },
+    musicId:    'overworld',
+    flavorText:  "A Goomba blocks Toad's path!",
+    victoryText: 'Goomba defeated! Toad leads the way! 🍄',
+  },
+  2: {
+    enemyName:    'Koopa Troopa',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#a18cd1', mid: '#fbc2eb', bottom: '#c3a3e8' },
+    victoryBg: { top: '#FFD700', mid: '#f8a5c2', bottom: '#c3a3e8' },
+    musicId:    'underground',
+    flavorText:  'A Koopa Troopa blocks the underground!',
+    victoryText: 'Koopa shelled! Toad stomps through! 🐢',
+  },
+  3: {
+    enemyName:    'Piranha Plant',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#f7971e', mid: '#ffd200', bottom: '#e8a838' },
+    victoryBg: { top: '#FFD700', mid: '#ffd200', bottom: '#f7971e' },
+    musicId:    'desert',
+    flavorText:  'A Piranha Plant snaps at Toad!',
+    victoryText: 'Piranha Plant pruned! 🌿',
+  },
+  4: {
+    enemyName:    'Boo',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#11998e', mid: '#38ef7d', bottom: '#1b7a56' },
+    victoryBg: { top: '#FFD700', mid: '#38ef7d', bottom: '#11998e' },
+    musicId:    'forest',
+    flavorText:  'Boo haunts the forest hall! Get ready to multiply! ×',
+    victoryText: "Boo chased away by Toad's math! 👻",
+  },
+  5: {
+    enemyName:    'Thwomp',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#0f0c29', mid: '#302b63', bottom: '#24243e' },
+    victoryBg: { top: '#FFD700', mid: '#302b63', bottom: '#24243e' },
+    musicId:    'spooky',
+    flavorText:  'A Thwomp drops from the shadows!',
+    victoryText: 'Thwomp thumped! Toad leaps ahead! 🪨',
+  },
+  6: {
+    enemyName:    'King Boo',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#b91c1c', mid: '#ef4444', bottom: '#7f1d1d' },
+    victoryBg: { top: '#FFD700', mid: '#ef4444', bottom: '#7f1d1d' },
+    musicId:    'castle',
+    flavorText:  'King Boo commands his ghost army!',
+    victoryText: 'King Boo banished by Toad! 👑',
+  },
+  7: {
+    enemyName:    'Bowser',
+    enemyImage:   null,
+    victoryImage: null,
+    bg: { top: '#1a0000', mid: '#7b0000', bottom: '#3d0000' },
+    victoryBg: { top: '#FFD700', mid: '#FF8C00', bottom: '#E52521' },
+    musicId:    'final',
+    flavorText:  "BOWSER himself stands in Toad's way!",
+    victoryText: 'BOWSER DEFEATED! 🏆 Toad saves the kingdom!',
+  },
+}
+
 export const CHARACTER_THEMES = {
   peach: PEACH_THEMES,
   daisy: DAISY_THEMES,
   rosalina: ROSALINA_THEMES,
+  toad: TOAD_THEMES,
 }
 
 /**

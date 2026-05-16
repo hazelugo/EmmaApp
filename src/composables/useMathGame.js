@@ -60,20 +60,30 @@ export function useMathGame () {
   /* ── Derived ────────────────────────────────────────────────── */
   const correctAnswer = computed(() => {
     if (currentProblem.operator === '+') return currentProblem.a + currentProblem.b
+    if (currentProblem.operator === '×') return currentProblem.a * currentProblem.b
     return currentProblem.a - currentProblem.b
   })
 
   /* ── Problem Generation ─────────────────────────────────────── */
   function generateProblem () {
-    const ops = ['+', '-']
+    // Multiplication unlocks at level 4; weighted so + stays most common
+    const ops = level.value >= 4
+      ? ['+', '+', '-', '×']
+      : ['+', '-']
     currentProblem.operator = ops[Math.floor(Math.random() * ops.length)]
+
     const max = difficulty.maxOperand
 
-    if (currentProblem.operator === '+') {
+    if (currentProblem.operator === '×') {
+      // Keep times-table operands ≤ 10 so answers stay manageable
+      const multMax = Math.min(max, 10)
+      currentProblem.a = Math.floor(Math.random() * multMax) + 1
+      currentProblem.b = Math.floor(Math.random() * multMax) + 1
+    } else if (currentProblem.operator === '+') {
       currentProblem.a = Math.floor(Math.random() * max) + 1
       currentProblem.b = Math.floor(Math.random() * max) + 1
     } else {
-      // Constraint: a >= b to avoid negative results
+      // Subtraction: a >= b to avoid negative results
       const a = Math.floor(Math.random() * max) + 1
       const b = Math.floor(Math.random() * (a + 1))
       currentProblem.a = a
