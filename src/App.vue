@@ -4,39 +4,187 @@ import ChallengeZone    from './components/ChallengeZone.vue'
 import NumberPad        from './components/NumberPad.vue'
 import LevelUpModal     from './components/LevelUpModal.vue'
 import CharacterSelect  from './components/CharacterSelect.vue'
-import LevelIntroModal   from './components/LevelIntroModal.vue'
+import LevelIntroModal  from './components/LevelIntroModal.vue'
 import LevelVictoryModal from './components/LevelVictoryModal.vue'
+import ShopOverlay from './components/ShopOverlay.vue'
+import OperatorTutorialOverlay from './components/OperatorTutorialOverlay.vue'
+import TimerResultsOverlay from './components/TimerResultsOverlay.vue'
+import SoundSettingsOverlay from './components/SoundSettingsOverlay.vue'
+import PWAInstallPrompt from './components/PWAInstallPrompt.vue'
 
-import { useMathGame }    from './composables/useMathGame.js'
-import { useSound }       from './composables/useSound.js'
-import { getLevelTheme }  from './composables/useLevelTheme.js'
-
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import confetti from 'canvas-confetti'
+
+import { useMathGame }   from './composables/useMathGame.js'
+import { useTimer }      from './composables/useTimer.js'
+import { useSound }      from './composables/useSound.js'
+import { useShop }       from './composables/useShop.js'
+import { getLevelTheme } from './composables/useLevelTheme.js'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
-  stars, streak, problemKey,
+  stars, problemKey,
   currentProblem, answer, feedback,
   difficulty, showLevelUp,
   showLevelVictory, completedLevel,
   showLevelIntro, pendingLevel,
+  showTutorial, tutorialOperator,
+  zeroHint,
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace, resetGame,
+  dismissTutorial,
+  creditTimerCoins,                    // Phase 3: routes coins through milestone check
 } = useMathGame()
 
-const { isMuted, toggleMute, playCorrect, playWrong, playTap, playStreak, playLevelUp, playSuccessMP3, playThemeMusic, stopThemeMusic } = useSound()
+const timer = useTimer()
 
-/* ── Level themes ───────────────────────────────────────── */
+/* ── Timer Mode State ─────────────────────────────────────────── */
+const isTimerMode       = ref(false)
+const showTimerResults  = ref(false)
+
+const { isMuted, volume, toggleMute, setVolume, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+
+/* ── Sound Settings ────────────────────────────────────────────── */
+const showSoundSettings = ref(false)
+function onOpenSoundSettings () { showSoundSettings.value = true }
+function onCloseSoundSettings () { showSoundSettings.value = false }
+function onSetVolume (v) { setVolume(v) }
+
+/* ── PWA Install Prompt ──────────────────────────────────────── */
+const showPWAPrompt    = ref(false)
+let   deferredPrompt   = null
+let   installTimer     = null
+
+onMounted(() => {
+  // Don't show if already dismissed or installed
+  if (localStorage.getItem('emma-pwa-dismissed')) return
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault()             // stop browser's native mini-bar
+    deferredPrompt = e
+    // Show our custom prompt after 60 seconds of engagement
+    installTimer = setTimeout(() => { showPWAPrompt.value = true }, 60_000)
+  })
+
+  // If already installed, make sure prompt stays hidden
+  window.addEventListener('appinstalled', () => {
+    showPWAPrompt.value = false
+    clearTimeout(installTimer)
+    localStorage.setItem('emma-pwa-dismissed', '1')
+  })
+})
+
+onBeforeUnmount(() => clearTimeout(installTimer))
+
+async function onPWAInstall () {
+  if (!deferredPrompt) return
+  deferredPrompt.prompt()
+  const { outcome } = await deferredPrompt.userChoice
+  if (outcome === 'accepted') {
+    localStorage.setItem('emma-pwa-dismissed', '1')
+  }
+  deferredPrompt = null
+  showPWAPrompt.value = false
+}
+
+function onPWADismiss () {
+  showPWAPrompt.value = false
+  clearTimeout(installTimer)
+  localStorage.setItem('emma-pwa-dismissed', '1')
+}
+
+/* ── Shop ─────────────────────────────────────────────────────── */
+const {
+  CATALOG,
+  owned,
+  equippedVariants,
+  pendingUndoItem,
+  purchaseItem,
+  undoPurchase,
+  equippedSrcForCharacter,
+} = useShop()
+
+const showShop = ref(false)
+
+/* ── Timer Mode Handlers ──────────────────────────────────────── */
+/**
+ * Called when the Sprint button is clicked (ScoreHeader emits 'start-sprint').
+ * Starts the 60-second countdown and switches the game into timer mode.
+ */
+function handleSprintStart () {
+  isTimerMode.value = true
+  showTimerResults.value = false
+  answer.value = ''
+  timer.startTimer(handleSprintEnd)
+}
+
+/**
+ * Called by useTimer's onComplete callback when the 60 seconds expire.
+ * Shows results overlay and persists earned coins to the main star pool.
+ */
+function handleSprintEnd () {
+  timer.handleComplete()
+  // Route earned coins through milestone check so level progression fires correctly
+  creditTimerCoins(timer.stars.value)
+  // Discard in-progress answer
+  answer.value = ''
+  isTimerMode.value = false
+  showTimerResults.value = true
+}
+
+/**
+ * Called when the player dismisses the results overlay.
+ * Restores normal game by generating a fresh standard problem.
+ */
+function onTimerResultsClose () {
+  showTimerResults.value = false
+  generateProblem()
+}
+
+function onOpenShop () {
+  showShop.value = true
+}
+
+function onCloseShop () {
+  showShop.value = false
+}
+
+function onPurchaseItem (itemId) {
+  purchaseItem(itemId, stars)
+}
+
+function onUndoPurchase () {
+  undoPurchase(stars)
+}
+
+function onUndoExpired () {
+  // Timer already fired inside useShop; nothing to do here.
+  // Handler exists so the @expired event on <ShopOverlay> has a binding.
+}
+
+/** Equipped variant src for the currently selected character, or null. */
+const equippedVariantSrc = computed(() => {
+  if (!selectedCharacter.value) return null
+  return equippedSrcForCharacter(selectedCharacter.value.id)
+})
+
+/* ── Level themes ─────────────────────────────────────────────── */
 // Theme for the INCOMING level (pre-level intro)
-const currentTheme  = computed(() => getLevelTheme(pendingLevel.value, selectedCharacter.value?.id))
+const currentTheme = computed(() => getLevelTheme(pendingLevel.value, selectedCharacter.value?.id))
 // Theme for the level that was JUST beaten (victory screen)
-const victoryTheme  = computed(() => getLevelTheme(completedLevel.value, selectedCharacter.value?.id))
+const victoryTheme = computed(() => getLevelTheme(completedLevel.value, selectedCharacter.value?.id))
+
+/* ── Operator unlock announcement (D-16) ──────────────────────── */
+const unlockedOperator = computed(() => {
+  if (pendingLevel.value === 3) return '×'
+  if (pendingLevel.value === 5) return '÷'
+  return null
+})
 
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
 
-function onSelectCharacter(char) {
+function onSelectCharacter (char) {
   const prevChar = localStorage.getItem('emma-character')
   if (prevChar !== char.id) {
     resetGame()
@@ -56,14 +204,39 @@ function onBackspace () {
 }
 
 function onSubmit () {
+  // ── Timer Mode path ────────────────────────────────────────────
+  if (isTimerMode.value) {
+    if (answer.value === '') return   // nothing to check
+
+    const prob = timer.currentProblem.value
+    const opMap = { '+': prob.a + prob.b, '-': prob.a - prob.b }
+    const correctAnswer = opMap[prob.operator]
+    if (correctAnswer === undefined) {
+      console.error(`[timer] Unexpected operator: ${prob.operator}`)
+      answer.value = ''
+      return
+    }
+
+    if (Number(answer.value) === correctAnswer) {
+      playCorrect()
+      timer.incrementScore()
+      timer.incrementCorrect()
+      answer.value = ''
+      timer.nextProblem()           // immediate next problem — no delay
+    } else {
+      playWrong()
+      answer.value = ''             // clear input; no penalty, no delay
+    }
+    return
+  }
+
+  // ── Standard Mode path ────────────────────────────────────────
   const result = checkAnswer()
   if (!result) return
 
   if (result === 'correct') {
-    // Canvas-Confetti Trigger
-    // Mario-themed confetti burst
     confetti({
-      particleCount: 100,
+      particleCount: 40,
       spread: 70,
       origin: { y: 0.6 },
       colors: ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#FFB300'],
@@ -71,16 +244,10 @@ function onSubmit () {
     })
 
     playCorrect()
-    playSuccessMP3()
-
-    // Streak fanfare at milestones
-    if (streak.value === 5 || streak.value === 10 || streak.value % 10 === 0) {
-      setTimeout(playStreak, 400)
-    }
 
     setTimeout(() => {
-      // Don't generate next problem while victory, intro, or level-up screens are showing
-      if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value) generateProblem()
+      // Don't generate next problem while victory, intro, level-up, or tutorial screens are showing
+      if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value && !showTutorial.value) generateProblem()
     }, 1400)
   } else {
     playWrong()
@@ -88,24 +255,22 @@ function onSubmit () {
   }
 }
 
-function closeLevelUp() {
+function closeLevelUp () {
   showLevelUp.value = false
-  if (!showLevelIntro.value && !showLevelVictory.value) generateProblem()
+  if (!showLevelIntro.value && !showLevelVictory.value && !showTutorial.value) generateProblem()
 }
 
 /**
  * Player tapped "NEXT WORLD" on the victory screen.
  * Hide victory, then show the pre-level intro for the new level.
- * If we're on level 7 (Bowser beaten), no next intro — just reset to level 1 flow.
+ * If we're on level 7 (Bowser beaten), no next intro — just keep playing.
  */
 function onVictoryNext () {
   showLevelVictory.value = false
   playThemeMusic(selectedCharacter.value.id)
-  // If there's a next level queued, show its intro; else generate a new problem
   if (completedLevel.value < 7) {
     showLevelIntro.value = true
   } else {
-    // Level 7 was the last — just keep playing at max level
     generateProblem()
   }
 }
@@ -119,9 +284,10 @@ function onLevelIntroStart () {
   generateProblem()
 }
 
-// Watch for level up / victory to play the fanfare
+// Watch for victory to stop music and play fanfare
 watch(showLevelVictory, (val) => {
   if (val) {
+    showShop.value = false          // prevent z-[200] overlap with victory overlay
     stopThemeMusic()
     playLevelUp()
   }
@@ -135,13 +301,13 @@ watch(showLevelVictory, (val) => {
   >
     <!-- Character Select Overlay -->
     <Transition name="fade">
-      <CharacterSelect 
-        v-if="!selectedCharacter" 
-        @select="onSelectCharacter" 
+      <CharacterSelect
+        v-if="!selectedCharacter"
+        @select="onSelectCharacter"
       />
     </Transition>
 
-    <!-- Level Victory — shows after each level is beaten (Peach wins!) -->
+    <!-- Level Victory — shows after each level is beaten -->
     <LevelVictoryModal
       v-if="selectedCharacter"
       :show="showLevelVictory"
@@ -157,38 +323,96 @@ watch(showLevelVictory, (val) => {
       :level="pendingLevel"
       :theme="currentTheme"
       :is-muted="isMuted"
+      :unlocked-operator="unlockedOperator"
       @start="onLevelIntroStart"
     />
 
-    <!-- Level Up Modal overlay -->
-    <LevelUpModal 
+    <!-- Operator Tutorial — fires once per newly-unlocked operator (MATH-01, MATH-02) -->
+    <OperatorTutorialOverlay
+      v-if="selectedCharacter"
+      :show="showTutorial"
+      :operator="tutorialOperator"
+      @done="dismissTutorial"
+    />
 
-      :show="showLevelUp" 
-      :stars="stars" 
-      @close="closeLevelUp" 
+    <!-- Level Up Modal overlay -->
+    <LevelUpModal
+      :show="showLevelUp"
+      :stars="stars"
+      @close="closeLevelUp"
+    />
+
+    <!-- Star Shop Overlay -->
+    <Transition name="fade">
+      <ShopOverlay
+        v-if="showShop"
+        :stars="stars"
+        :catalog="CATALOG"
+        :owned="owned"
+        :equipped-variants="equippedVariants"
+        :pending-undo-item="pendingUndoItem"
+        @close="onCloseShop"
+        @purchase="onPurchaseItem"
+        @undo="onUndoPurchase"
+        @expired="onUndoExpired"
+      />
+    </Transition>
+
+    <!-- Sound Settings Overlay -->
+    <Transition name="fade">
+      <SoundSettingsOverlay
+        v-if="showSoundSettings"
+        :show="showSoundSettings"
+        :is-muted="isMuted"
+        :volume="volume"
+        @close="onCloseSoundSettings"
+        @toggle-mute="toggleMute"
+        @set-volume="onSetVolume"
+      />
+    </Transition>
+
+    <!-- Timer Results Overlay -->
+    <TimerResultsOverlay
+      :show="showTimerResults"
+      :coins="timer.stars.value"
+      :correct-count="timer.correctCount.value"
+      :high-score="timer.highScore.value"
+      :is-new-high-score="timer.isNewRecord.value"
+      @close="onTimerResultsClose"
+    />
+
+    <!-- PWA Install Prompt (appears after 60s if installable) -->
+    <PWAInstallPrompt
+      :show="showPWAPrompt"
+      @install="onPWAInstall"
+      @dismiss="onPWADismiss"
     />
 
     <!-- ★ Score Header -->
     <ScoreHeader
       :stars="stars"
-      :streak="streak"
       :is-muted="isMuted"
-      :max-operand="difficulty.maxOperand"
+      :is-timer-mode="isTimerMode"
+      :time-left="timer.timeLeft.value"
       @toggle-mute="toggleMute"
+      @open-shop="onOpenShop"
+      @start-sprint="handleSprintStart"
+      @open-sound-settings="onOpenSoundSettings"
     />
 
     <!-- Middle: Challenge -->
     <div class="flex flex-1 gap-3 items-stretch min-h-0">
-      <!-- Challenge Zone (centre) -->
       <ChallengeZone
         v-if="selectedCharacter"
-        :num1="currentProblem.a"
-        :num2="currentProblem.b"
-        :operator="currentProblem.operator"
+        :num1="isTimerMode ? timer.currentProblem.value.a : currentProblem.a"
+        :num2="isTimerMode ? timer.currentProblem.value.b : currentProblem.b"
+        :operator="isTimerMode ? timer.currentProblem.value.operator : currentProblem.operator"
         :answer="answer"
         :feedback="feedback"
         :problem-key="problemKey"
         :character="selectedCharacter"
+        :variant-src="equippedVariantSrc"
+        :zero-hint="zeroHint"
       />
     </div>
 

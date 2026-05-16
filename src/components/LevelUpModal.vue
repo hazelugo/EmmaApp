@@ -20,6 +20,14 @@ const showButton = ref(false)
 const flagDown = ref(false)
 let timers = []
 
+const skyStars = Array.from({ length: 12 }, (_, i) => ({
+  id: i,
+  left:           (Math.random() * 90 + 5).toFixed(2) + '%',
+  top:            (Math.random() * 40 + 5).toFixed(2) + '%',
+  animationDelay: (Math.random() * 3).toFixed(2) + 's',
+  fontSize:       (10 + Math.random() * 14).toFixed(2) + 'px',
+}))
+
 function clearTimers () {
   timers.forEach(clearTimeout)
   timers = []
@@ -88,11 +96,11 @@ onUnmounted(() => {
 
       <!-- ═══ Sky ═══ -->
       <div class="absolute inset-0 flagpole-sky">
-        <span v-for="i in 12" :key="i" class="sky-star" :style="{
-          left: (Math.random() * 90 + 5) + '%',
-          top: (Math.random() * 40 + 5) + '%',
-          animationDelay: (Math.random() * 3) + 's',
-          fontSize: (10 + Math.random() * 14) + 'px',
+        <span v-for="star in skyStars" :key="star.id" class="sky-star" :style="{
+          left: star.left,
+          top: star.top,
+          animationDelay: star.animationDelay,
+          fontSize: star.fontSize,
         }">✦</span>
       </div>
 

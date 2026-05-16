@@ -52,7 +52,7 @@ function startScene () {
 }
 
 function fireVictoryConfetti () {
-  const marioColors = ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#80D8FF', '#FFB300']
+  const marioColors = ['var(--color-star-gold)', 'var(--color-mario-red)', 'var(--color-luigi)', 'var(--color-peach)', 'var(--color-rosalina)', 'var(--color-coin)']
   const bursts = [
     { delay: 0,    x: 0.2,  y: 0.3 },
     { delay: 300,  x: 0.8,  y: 0.25 },
@@ -89,7 +89,7 @@ onUnmounted(clearTimers)
 
 /* ── Dynamic background ────────────────────────────────────────── */
 const bgStyle = computed(() => {
-  const bg = props.theme?.victoryBg ?? { top: '#FFD700', mid: '#FFF176', bottom: '#7ADB7E' }
+  const bg = props.theme?.victoryBg ?? { top: 'var(--color-star-gold)', mid: 'var(--color-star-glow)', bottom: 'var(--color-luigi-light)' }
   return {
     background: `linear-gradient(180deg, ${bg.top} 0%, ${bg.mid} 50%, ${bg.bottom} 100%)`,
   }
@@ -173,18 +173,18 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
 /* ── Twinkling stars ──────────────────────────────────────────── */
 .victory-star {
   position: absolute;
-  color: #E52521;
+  color: var(--color-mario-red);
   pointer-events: none;
   animation: vtwinkle 1.8s ease-in-out infinite alternate;
-  text-shadow: 0 0 8px rgba(229, 37, 33, 0.6);
+  text-shadow: 0 0 8px rgba(var(--color-mario-red-rgb), 0.6);
 }
 /* Alternate some to gold */
 .victory-star:nth-child(odd) {
-  color: #FFD700;
+  color: var(--color-star-gold);
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
 }
 @keyframes vtwinkle {
-  0%   { opacity: 0.2; transform: scale(0.7) rotate(0deg); }
+  0%   { opacity: 0.8; transform: scale(0.7) rotate(0deg); }
   100% { opacity: 1;   transform: scale(1.3) rotate(20deg); }
 }
 
@@ -194,13 +194,13 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
   top: 24px;
   left: 50%;
   transform: translateX(-50%);
-  background: linear-gradient(180deg, #E52521 0%, #B71C1C 100%);
-  border: 4px solid #5D0000;
+  background: linear-gradient(180deg, var(--color-mario-red) 0%, #B71C1C 100%);
+  border: 4px solid var(--color-block-outline);
   border-radius: 40px;
   padding: 8px 28px;
   font-size: 1.05rem;
   font-weight: 900;
-  color: #FFD700;
+  color: var(--color-star-gold);
   letter-spacing: 2px;
   white-space: nowrap;
   box-shadow:
@@ -257,22 +257,22 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
 .victory-title {
   font-size: clamp(2rem, 8vw, 3rem);
   font-weight: 900;
-  color: #E52521;
+  color: var(--color-mario-red);
   text-shadow:
-    3px 3px 0 #FFD700,
+    3px 3px 0 var(--color-star-gold),
     6px 6px 0 rgba(0,0,0,0.3);
   letter-spacing: 2px;
   margin: 0;
   animation: title-shimmer 1.8s ease-in-out infinite alternate;
 }
 @keyframes title-shimmer {
-  0%   { text-shadow: 3px 3px 0 #FFD700, 6px 6px 0 rgba(0,0,0,0.3); }
-  100% { text-shadow: 3px 3px 0 #FFD700, 6px 6px 0 rgba(0,0,0,0.3), 0 0 30px rgba(229,37,33,0.5); }
+  0%   { text-shadow: 3px 3px 0 var(--color-star-gold), 6px 6px 0 rgba(0,0,0,0.3); }
+  100% { text-shadow: 3px 3px 0 var(--color-star-gold), 6px 6px 0 rgba(0,0,0,0.3), 0 0 30px rgba(229,37,33,0.5); }
 }
 
 .victory-sub {
   font-size: clamp(0.85rem, 3vw, 1.05rem);
-  color: #1B2B1B;
+  color: var(--color-dark);
   font-weight: 700;
   text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
   max-width: 340px;
@@ -282,14 +282,15 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
 
 /* ── Next World button ────────────────────────────────────────── */
 .next-btn {
+  opacity: 0.8;
   margin-top: 8px;
   padding: 15px 44px;
   font-family: inherit;
   font-size: clamp(1.1rem, 4vw, 1.4rem);
   font-weight: 900;
-  color: #FFD700;
-  background: linear-gradient(180deg, #E52521 0%, #B71C1C 100%);
-  border: 4px solid #5D0000;
+  color: var(--color-star-gold);
+  background: linear-gradient(180deg, var(--color-mario-red) 0%, #B71C1C 100%);
+  border: 4px solid var(--color-block-outline);
   border-radius: 18px;
   cursor: pointer;
   letter-spacing: 1px;
@@ -305,7 +306,7 @@ const stars = Array.from({ length: 18 }, (_, i) => ({
 }
 @keyframes btn-appear {
   0%   { transform: scale(0.4) translateY(30px); opacity: 0; }
-  100% { transform: scale(1)   translateY(0);    opacity: 1; }
+  100% { transform: scale(1)   translateY(0);    opacity: 0.8; }
 }
 .next-btn:hover {
   transform: scale(1.07) translateY(-2px);

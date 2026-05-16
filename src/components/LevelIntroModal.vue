@@ -11,10 +11,11 @@
  *  - "LET'S GO!" button to start the level
  *
  * Props:
- *   show    {Boolean} — controls visibility
- *   level   {Number}  — current level (1–7)
- *   theme   {Object}  — from getLevelTheme(level)
- *   isMuted {Boolean} — mute flag for music
+ *   show              {Boolean} — controls visibility
+ *   level             {Number}  — current level (1–7)
+ *   theme             {Object}  — from getLevelTheme(level)
+ *   isMuted           {Boolean} — mute flag for music
+ *   unlockedOperator  {String}  — '×' or '÷' to announce a newly-unlocked operator, or null
  *
  * Emits:
  *   start   — fired when the player taps "LET'S GO!"
@@ -24,10 +25,11 @@ import { ref, watch, onMounted, onUnmounted, computed } from 'vue'
 import starSrc from '../assets/star.png'
 
 const props = defineProps({
-  show:    { type: Boolean, default: false },
-  level:   { type: Number,  default: 1     },
-  theme:   { type: Object,  default: () => ({}) },
-  isMuted: { type: Boolean, default: false  },
+  show:             { type: Boolean, default: false      },
+  level:            { type: Number,  default: 1          },
+  theme:            { type: Object,  default: () => ({}) },
+  isMuted:          { type: Boolean, default: false      },
+  unlockedOperator: { type: String,  default: null       },
 })
 
 const emit = defineEmits(['start'])
@@ -122,6 +124,13 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
 
       <!-- Content overlay at bottom -->
       <div class="relative z-10 flex flex-col items-center justify-end h-full w-full pb-20 md:pb-32">
+        <!-- Unlock announcement (D-16) — only when a new operator unlocked at this level -->
+        <p
+          v-if="unlockedOperator && showBtn"
+          class="unlock-announce pop-in mb-4"
+        >
+          New move unlocked: {{ unlockedOperator }}!
+        </p>
         <!-- LET'S GO button -->
         <button
           v-if="showBtn"
@@ -143,6 +152,19 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
 .intro-fade-leave-active { transition: opacity 0.3s ease; }
 .intro-fade-enter-from,
 .intro-fade-leave-to    { opacity: 0; }
+
+/* ── Unlock announcement (D-16) ─────────────────────────────── */
+.unlock-announce {
+  font-size: clamp(1.1rem, 4vw, 1.4rem);
+  font-weight: 900;
+  color: #FFD700;
+  text-shadow:
+    2px 2px 0 #E52521,
+    4px 4px 0 rgba(0,0,0,0.4);
+  letter-spacing: 1px;
+  text-align: center;
+  margin: 0;
+}
 
 /* ── Layout ─────────────────────────────────────────────────── */
 .intro-overlay {
@@ -167,7 +189,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
   text-shadow: 0 0 8px rgba(255, 215, 0, 0.7);
 }
 @keyframes twinkle {
-  0%   { opacity: 0.2; transform: scale(0.7); }
+  0%   { opacity: 0.8; transform: scale(0.7); }
   100% { opacity: 1;   transform: scale(1.3); }
 }
 
@@ -280,6 +302,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
 
 /* ── LET'S GO button ────────────────────────────────────────── */
 .lets-go-btn {
+  opacity: 0.8;
   margin-top: 8px;
   padding: 15px 44px;
   font-family: inherit;
@@ -303,7 +326,7 @@ const stars = Array.from({ length: 20 }, (_, i) => ({
 }
 @keyframes btn-appear {
   0%   { transform: scale(0.4) translateY(30px); opacity: 0; }
-  100% { transform: scale(1) translateY(0);       opacity: 1; }
+  100% { transform: scale(1) translateY(0);       opacity: 0.8; }
 }
 .lets-go-btn:hover {
   transform: scale(1.07) translateY(-2px);

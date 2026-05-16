@@ -1,16 +1,14 @@
 <script setup>
 import marioCoinSrc from '../assets/mario-coin.png'
-import starSrc from '../assets/star.png'
 
 defineProps({
-  stars:      { type: Number, default: 0 },
-  streak:     { type: Number, default: 0 },
-  isMuted:    { type: Boolean, default: false },
-  maxOperand: { type: Number, default: 5 },
-  character:  { type: Object, default: () => ({}) },
+  stars:       { type: Number,  default: 0 },
+  isMuted:     { type: Boolean, default: false },
+  isTimerMode: { type: Boolean, default: false },
+  timeLeft:    { type: Number,  default: 60 },
 })
 
-defineEmits(['toggle-mute'])
+defineEmits(['toggle-mute', 'open-shop', 'start-sprint', 'open-sound-settings'])
 </script>
 
 <template>
@@ -31,30 +29,56 @@ defineEmits(['toggle-mute'])
       </span>
     </div>
 
-    <!-- Title -->
-    <h1 class="text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md text-center leading-tight">
+    <!-- Title OR Timer Countdown -->
+    <h1
+      v-if="!isTimerMode"
+      class="text-xl md:text-2xl font-extrabold tracking-tight text-mushroom-white drop-shadow-md text-center leading-tight"
+    >
       Emma's Star World
     </h1>
+    <span
+      v-else
+      class="text-2xl md:text-3xl font-extrabold drop-shadow-md text-center leading-tight"
+      :class="timeLeft < 10 ? 'text-red-400 animate-pulse' : 'text-mushroom-white'"
+    >
+      &#x23F3; {{ timeLeft }}s
+    </span>
 
     <!-- Right Controls -->
     <div class="flex items-center gap-2">
-      <!-- Streak Badge with Mario SVG Super Star -->
-      <div
-        v-if="streak >= 2"
-        class="flex items-center gap-1 rounded-full px-2 py-1"
+      <!-- Sprint Button (only when not in timer mode) -->
+      <button
+        v-if="!isTimerMode"
+        id="btn-sprint"
+        type="button"
+        class="btn-press flex items-center justify-center h-11 md:h-12 px-3 rounded-xl
+               hover:scale-110 transition-transform cursor-pointer"
+        aria-label="Start sprint timer"
+        @click="$emit('start-sprint')"
       >
-        <!-- Star PNG (with eyes, like Mario) -->
-        <img :src="starSrc" alt="star" class="w-6 h-6 streak-star" style="image-rendering: pixelated;" />
-        <span class="text-lg md:text-xl font-bold text-star-gold">{{ streak }}</span>
-      </div>
+        <span class="text-base md:text-lg font-bold text-mushroom-white drop-shadow-md">&#x23F1; Sprint</span>
+      </button>
 
-      <!-- Mute Toggle -->
+      <!-- Shop Entry (hidden during timer mode to keep UI simple) -->
+      <button
+        v-if="!isTimerMode"
+        id="btn-shop"
+        type="button"
+        class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
+               rounded-xl hover:scale-110 transition-transform cursor-pointer"
+        aria-label="Open Star Shop"
+        @click="$emit('open-shop')"
+      >
+        <span class="text-xl md:text-2xl drop-shadow-md">🏪</span>
+      </button>
+
+      <!-- Mute / Sound Settings button — opens Sound Settings overlay -->
       <button
         id="btn-mute"
         class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
                rounded-xl hover:scale-110 transition-transform cursor-pointer"
-        :aria-label="isMuted ? 'Unmute sounds' : 'Mute sounds'"
-        @click="$emit('toggle-mute')"
+        :aria-label="isMuted ? 'Open sound settings (currently muted)' : 'Open sound settings'"
+        @click="$emit('open-sound-settings')"
       >
         <span class="text-xl md:text-2xl drop-shadow-md">{{ isMuted ? '🔇' : '🔊' }}</span>
       </button>
@@ -70,15 +94,5 @@ defineEmits(['toggle-mute'])
   0%   { transform: rotateY(0deg) scale(1); }
   50%  { transform: rotateY(180deg) scale(1.2); }
   100% { transform: rotateY(360deg) scale(1); }
-}
-
-/* Streak SVG star bounce */
-.streak-star {
-  animation: star-spin-small 1.2s ease-in-out infinite;
-  filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));
-}
-@keyframes star-spin-small {
-  0%, 100% { transform: scale(1) rotate(0deg); }
-  50%       { transform: scale(1.2) rotate(15deg); }
 }
 </style>
