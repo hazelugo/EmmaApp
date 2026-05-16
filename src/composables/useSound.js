@@ -116,11 +116,27 @@ function playWrong () {
   setTimeout(() => playTone(120, 'square', 0.2, 0.15), 60)
 }
 
-/** Block bump / button tap */
+/** Block bump / button tap (fallback when no digit note is needed) */
 function playTap () {
   if (isMuted.value) return
-  // Quick blocky click (like hitting a ? block lightly)
   playTone(600, 'square', 0.04, 0.1)
+}
+
+// Pentatonic C-major scale — one note per digit, all harmonious together
+const DIGIT_NOTES = {
+  1: 261.63, 2: 293.66, 3: 329.63,
+  4: 392.00, 5: 440.00, 6: 523.25,
+  7: 587.33, 8: 659.25, 9: 783.99,
+  0: 220.00,
+}
+
+/** Xylophone-style note for each number pad digit. */
+function playDigitNote (digit) {
+  if (isMuted.value) return
+  const freq = DIGIT_NOTES[Number(digit)]
+  if (freq == null) return
+  // Triangle wave with medium decay = marimba/xylophone feel
+  playTone(freq, 'triangle', 0.30, 0.22)
 }
 
 /** 1-UP / Power-Up fanfare — streak milestone */
@@ -212,6 +228,7 @@ export function useSound () {
     playCorrect,
     playWrong,
     playTap,
+    playDigitNote,
     playStreak,
     playLevelUp,
     playSuccessMP3,

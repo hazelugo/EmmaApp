@@ -15,15 +15,16 @@ import PWAInstallPrompt from './components/PWAInstallPrompt.vue'
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import confetti from 'canvas-confetti'
 
-import { useMathGame }   from './composables/useMathGame.js'
-import { useTimer }      from './composables/useTimer.js'
-import { useSound }      from './composables/useSound.js'
-import { useShop }       from './composables/useShop.js'
-import { getLevelTheme } from './composables/useLevelTheme.js'
+import { useMathGame }        from './composables/useMathGame.js'
+import { useTimer }           from './composables/useTimer.js'
+import { useSound }           from './composables/useSound.js'
+import { useShop }            from './composables/useShop.js'
+import { getLevelTheme }      from './composables/useLevelTheme.js'
+import { useCharacterVoice }  from './composables/useCharacterVoice.js'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
-  stars, problemKey,
+  stars, streak, problemKey,
   currentProblem, answer, feedback,
   difficulty, showLevelUp,
   showLevelVictory, completedLevel,
@@ -33,7 +34,7 @@ const {
   generateProblem, checkAnswer, clearFeedback,
   appendDigit, backspace, resetGame,
   dismissTutorial,
-  creditTimerCoins,                    // Phase 3: routes coins through milestone check
+  creditTimerCoins,
 } = useMathGame()
 
 const timer = useTimer()
@@ -42,13 +43,81 @@ const timer = useTimer()
 const isTimerMode       = ref(false)
 const showTimerResults  = ref(false)
 
-const { isMuted, volume, toggleMute, setVolume, playCorrect, playWrong, playTap, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+const { isMuted, volume, toggleMute, setVolume, playCorrect, playWrong, playTap, playDigitNote, playStreak, playLevelUp, playThemeMusic, stopThemeMusic } = useSound()
+const voice = useCharacterVoice()
 
 /* ── Sound Settings ────────────────────────────────────────────── */
 const showSoundSettings = ref(false)
 function onOpenSoundSettings () { showSoundSettings.value = true }
 function onCloseSoundSettings () { showSoundSettings.value = false }
 function onSetVolume (v) { setVolume(v) }
+
+/* ── Idle Nudge ───────────────────────────────────────────────── */
+const idleMessage    = ref('')
+const streakFlash    = ref('')   // CSS class for screen flash at streak milestones
+let   idleTimer      = null
+let   idleClearTimer = null
+
+function resetIdleTimer () {
+  clearTimeout(idleTimer)
+  clearTimeout(idleClearTimer)
+  idleMessage.value = ''
+  if (!selectedCharacter.value || feedback.value) return
+  idleTimer = setTimeout(() => {
+    const charId = selectedCharacter.value?.id
+    const text   = voice.sayIdle(charId, isMuted.value)
+    idleMessage.value = text
+    idleClearTimer = setTimeout(() => { idleMessage.value = '' }, 4500)
+  }, 8000)
+}
+
+/* ── Streak Explosion ─────────────────────────────────────────── */
+function fireStreakExplosion (n) {
+  const colors = ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#80D8FF', '#FFB300']
+
+  if (n >= 10) {
+    // Triple burst from left, centre, right + gold flash
+    ;[0.1, 0.5, 0.9].forEach((x, i) => {
+      setTimeout(() => confetti({
+        particleCount: 160,
+        startVelocity: 38,
+        spread: 360,
+        ticks: 90,
+        gravity: 0.65,
+        origin: { x, y: 0.45 },
+        colors,
+        shapes: ['star', 'circle'],
+      }), i * 180)
+    })
+    streakFlash.value = 'flash-gold'
+    setTimeout(() => { streakFlash.value = '' }, 700)
+  } else if (n >= 5) {
+    // Dual burst from sides + orange flash
+    ;[0.15, 0.85].forEach((x, i) => {
+      setTimeout(() => confetti({
+        particleCount: 110,
+        startVelocity: 32,
+        spread: 280,
+        ticks: 65,
+        gravity: 0.72,
+        origin: { x, y: 0.4 },
+        colors,
+        shapes: ['star', 'circle'],
+      }), i * 200)
+    })
+    streakFlash.value = 'flash-star'
+    setTimeout(() => { streakFlash.value = '' }, 500)
+  } else {
+    // n === 3 — single upward burst
+    confetti({
+      particleCount: 70,
+      spread: 180,
+      origin: { y: 0.55 },
+      colors: ['#FFD700', '#4CAF50', '#E52521'],
+      shapes: ['star'],
+    })
+  }
+}
 
 /* ── PWA Install Prompt ──────────────────────────────────────── */
 const showPWAPrompt    = ref(false)
@@ -192,15 +261,22 @@ function onSelectCharacter (char) {
   }
   selectedCharacter.value = char
   playThemeMusic(char.id)
+  resetIdleTimer()
 }
 
 /* ── Number Pad Handlers ──────────────────────────────────────── */
 function onDigit (digit) {
-  if (appendDigit(digit)) playTap()
+  if (appendDigit(digit)) {
+    playDigitNote(digit)   // xylophone note per digit
+    resetIdleTimer()
+  }
 }
 
 function onBackspace () {
-  if (backspace()) playTap()
+  if (backspace()) {
+    playTap()
+    resetIdleTimer()
+  }
 }
 
 function onSubmit () {
@@ -233,24 +309,41 @@ function onSubmit () {
   // ── Standard Mode path ────────────────────────────────────────
   const result = checkAnswer()
   if (!result) return
+  resetIdleTimer()
+
+  const charId = selectedCharacter.value?.id
 
   if (result === 'correct') {
-    confetti({
-      particleCount: 40,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#FFB300'],
-      shapes: ['star', 'circle'],
-    })
+    // Check streak milestone BEFORE confetti so explosion fires on top
+    const isStreakMilestone = streak.value === 3 || streak.value === 5
+      || (streak.value >= 10 && streak.value % 5 === 0)
+
+    if (isStreakMilestone) {
+      fireStreakExplosion(streak.value)
+      const milestoneText = voice.sayStreakMilestone(streak.value, charId, isMuted.value)
+      idleMessage.value = milestoneText
+      clearTimeout(idleClearTimer)
+      idleClearTimer = setTimeout(() => { idleMessage.value = '' }, 3000)
+      playStreak()
+    } else {
+      confetti({
+        particleCount: 40,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#FFD700', '#E52521', '#4CAF50', '#F8A5C2', '#FFB300'],
+        shapes: ['star', 'circle'],
+      })
+      voice.sayCorrect(charId, isMuted.value)
+    }
 
     playCorrect()
 
     setTimeout(() => {
-      // Don't generate next problem while victory, intro, level-up, or tutorial screens are showing
       if (!showLevelVictory.value && !showLevelUp.value && !showLevelIntro.value && !showTutorial.value) generateProblem()
     }, 1400)
   } else {
     playWrong()
+    voice.sayWrong(charId, isMuted.value)
     setTimeout(clearFeedback, 900)
   }
 }
@@ -282,19 +375,31 @@ function onLevelIntroStart () {
   showLevelIntro.value = false
   showLevelUp.value    = false
   generateProblem()
+  resetIdleTimer()
 }
 
-// Watch for victory to stop music and play fanfare
+// Watch for victory to stop music, play fanfare, and have character speak
 watch(showLevelVictory, (val) => {
   if (val) {
-    showShop.value = false          // prevent z-[200] overlap with victory overlay
+    showShop.value = false
     stopThemeMusic()
     playLevelUp()
+    const charId = selectedCharacter.value?.id
+    setTimeout(() => voice.sayLevelUp(charId, isMuted.value), 800)
   }
 })
 </script>
 
 <template>
+  <!-- Streak milestone screen flash (sits above everything) -->
+  <Transition name="flash-fade">
+    <div
+      v-if="streakFlash"
+      class="fixed inset-0 pointer-events-none z-[500]"
+      :class="streakFlash"
+    />
+  </Transition>
+
   <div
     id="app-root"
     class="relative z-10 flex flex-col min-h-dvh max-w-lg mx-auto px-3 py-3 gap-3 select-none"
@@ -413,6 +518,7 @@ watch(showLevelVictory, (val) => {
         :character="selectedCharacter"
         :variant-src="equippedVariantSrc"
         :zero-hint="zeroHint"
+        :idle-message="idleMessage"
       />
     </div>
 
@@ -425,3 +531,14 @@ watch(showLevelVictory, (val) => {
     />
   </div>
 </template>
+
+<style scoped>
+/* ── Streak screen flash ─────────────────────────────────────── */
+.flash-gold { background: rgba(255, 215, 0, 0.35); }
+.flash-star { background: rgba(255, 140, 0, 0.28); }
+
+.flash-fade-enter-active { transition: opacity 0s; }
+.flash-fade-leave-active { transition: opacity 0.65s ease-out; }
+.flash-fade-enter-from   { opacity: 1; }
+.flash-fade-leave-to     { opacity: 0; }
+</style>

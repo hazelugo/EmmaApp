@@ -2,15 +2,16 @@
 import { ref, watch, onUnmounted } from 'vue'
 
 const props = defineProps({
-  num1:       { type: Number, required: true },
-  num2:       { type: Number, required: true },
-  operator:   { type: String, required: true },
-  answer:     { type: String, default: '' },
-  feedback:   { type: String, default: '' },
-  problemKey: { type: Number, default: 0 },
-  character:  { type: Object, required: true },
-  variantSrc: { type: String, default: null  },
-  zeroHint:   { type: String, default: ''    },
+  num1:         { type: Number, required: true },
+  num2:         { type: Number, required: true },
+  operator:     { type: String, required: true },
+  answer:       { type: String, default: '' },
+  feedback:     { type: String, default: '' },
+  problemKey:   { type: Number, default: 0 },
+  character:    { type: Object, required: true },
+  variantSrc:   { type: String, default: null  },
+  zeroHint:     { type: String, default: ''    },
+  idleMessage:  { type: String, default: ''    },
 })
 
 /* ── Zero-hint bubble (D-10, D-11) ────────────────────────────────── */
@@ -51,7 +52,7 @@ onUnmounted(() => {
         class="absolute w-20 h-20 md:w-32 md:h-32 rounded-full blur-md"
         :class="character.bg"
       ></div>
-      <!-- Zero-operand hint bubble (D-10, D-11) -->
+      <!-- Zero-operand hint bubble (D-10, D-11) — takes priority over idle -->
       <Transition name="bubble-fade">
         <div
           v-if="showBubble && zeroHint"
@@ -63,6 +64,22 @@ onUnmounted(() => {
           {{ zeroHint }}
           <span class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full
                        border-[8px] border-transparent border-t-mushroom-white" />
+        </div>
+      </Transition>
+
+      <!-- Idle nudge bubble — only shows when character is waiting on Emma -->
+      <Transition name="bubble-fade">
+        <div
+          v-if="idleMessage && !zeroHint"
+          class="absolute -top-3 left-1/2 -translate-x-1/2 -translate-y-full
+                 bg-star-gold border-2 border-daisy-dark rounded-2xl rounded-bl-sm
+                 px-3 py-2 text-xs md:text-sm font-bold text-dark text-center
+                 min-w-[140px] max-w-[220px] shadow-lg z-30 pointer-events-none
+                 animate-pulse"
+        >
+          {{ idleMessage }}
+          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-full
+                       border-[8px] border-transparent border-t-star-gold" />
         </div>
       </Transition>
       <img
