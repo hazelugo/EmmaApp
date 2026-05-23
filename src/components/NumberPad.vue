@@ -15,7 +15,7 @@ const digits = [7, 8, 9, 4, 5, 6, 1, 2, 3]
     aria-label="Number pad"
   >
     <div class="grid grid-cols-3 gap-3">
-      <!-- Digit buttons: 7-9, 4-6, 1-3 (Pipe-green like warp pipes) -->
+      <!-- Digit buttons: 7-9, 4-6, 1-3 -->
       <button
         v-for="d in digits.slice(0, 9)"
         :key="d"
@@ -80,7 +80,7 @@ const digits = [7, 8, 9, 4, 5, 6, 1, 2, 3]
         id="btn-submit"
         :disabled="disabled"
         class="btn-press flex items-center justify-center
-               rounded-2xl font-extrabold text-2xl md:text-3xl
+               rounded-2xl font-extrabold text-3xl md:text-4xl
                min-h-[60px] md:min-h-[68px]
                bg-star-gold text-dark
                border-b-4 border-daisy-dark
@@ -92,7 +92,7 @@ const digits = [7, 8, 9, 4, 5, 6, 1, 2, 3]
         aria-label="Submit answer"
         @click="emit('submit')"
       >
-        GO! ⭐
+        GO!
       </button>
     </div>
   </nav>

@@ -6,6 +6,7 @@ import LevelUpModal     from './components/LevelUpModal.vue'
 import CharacterSelect  from './components/CharacterSelect.vue'
 import LevelIntroModal  from './components/LevelIntroModal.vue'
 import LevelVictoryModal from './components/LevelVictoryModal.vue'
+import ModeSelect from './components/ModeSelect.vue'
 import ShopOverlay from './components/ShopOverlay.vue'
 import OperatorTutorialOverlay from './components/OperatorTutorialOverlay.vue'
 import TimerResultsOverlay from './components/TimerResultsOverlay.vue'
@@ -21,6 +22,7 @@ import { useSound }           from './composables/useSound.js'
 import { useShop }            from './composables/useShop.js'
 import { getLevelTheme }      from './composables/useLevelTheme.js'
 import { useCharacterVoice }  from './composables/useCharacterVoice.js'
+import { CHARACTERS }         from './data/characters.js'
 
 /* ── Composables ──────────────────────────────────────────────── */
 const {
@@ -38,6 +40,19 @@ const {
 } = useMathGame()
 
 const timer = useTimer()
+
+/* ── Mode Selection ───────────────────────────────────────────── */
+const selectedMode = ref(null) // null | 'adventure' | 'sprint'
+
+function onSelectMode (mode) {
+  selectedMode.value = mode
+  localStorage.setItem('emma-mode', mode)
+  if (mode === 'sprint') {
+    handleSprintStart()
+  } else {
+    generateProblem()
+  }
+}
 
 /* ── Timer Mode State ─────────────────────────────────────────── */
 const isTimerMode       = ref(false)
@@ -207,7 +222,7 @@ function handleSprintEnd () {
  */
 function onTimerResultsClose () {
   showTimerResults.value = false
-  generateProblem()
+  selectedMode.value = null
 }
 
 function onOpenShop () {
@@ -250,16 +265,42 @@ const unlockedOperator = computed(() => {
   return null
 })
 
+/* ── Navigation ───────────────────────────────────────────────── */
+function onGoHome () {
+  if (isTimerMode.value) {
+    timer.handleComplete()
+    isTimerMode.value = false
+  }
+  selectedMode.value = null
+  selectedCharacter.value = null
+  stopThemeMusic()
+}
+
 /* ── Character Selection ──────────────────────────────────────── */
 const selectedCharacter = ref(null)
+
+/* Restore last session so returning players skip both select screens */
+onMounted(() => {
+  const savedId   = localStorage.getItem('emma-character')
+  const savedMode = localStorage.getItem('emma-mode')
+  if (!savedId) return
+  const char = CHARACTERS.find(c => c.id === savedId)
+  if (!char) return
+  selectedCharacter.value = char
+  playThemeMusic(char.id)
+  if (savedMode === 'adventure' || savedMode === 'sprint') {
+    onSelectMode(savedMode)
+  }
+})
 
 function onSelectCharacter (char) {
   const prevChar = localStorage.getItem('emma-character')
   if (prevChar !== char.id) {
     resetGame()
-    localStorage.setItem('emma-character', char.id)
   }
+  localStorage.setItem('emma-character', char.id)
   selectedCharacter.value = char
+  selectedMode.value = null
   playThemeMusic(char.id)
   resetIdleTimer()
 }
@@ -409,6 +450,16 @@ watch(showLevelVictory, (val) => {
       <CharacterSelect
         v-if="!selectedCharacter"
         @select="onSelectCharacter"
+        @open-shop="onOpenShop"
+      />
+    </Transition>
+
+    <!-- Mode Select — shown after character pick, before game starts -->
+    <Transition name="fade">
+      <ModeSelect
+        v-if="selectedCharacter && !selectedMode"
+        :character="selectedCharacter"
+        @select="onSelectMode"
       />
     </Transition>
 
@@ -499,10 +550,8 @@ watch(showLevelVictory, (val) => {
       :is-muted="isMuted"
       :is-timer-mode="isTimerMode"
       :time-left="timer.timeLeft.value"
-      @toggle-mute="toggleMute"
-      @open-shop="onOpenShop"
-      @start-sprint="handleSprintStart"
       @open-sound-settings="onOpenSoundSettings"
+      @go-home="onGoHome"
     />
 
     <!-- Middle: Challenge -->
@@ -529,6 +578,7 @@ watch(showLevelVictory, (val) => {
       @backspace="onBackspace"
       @submit="onSubmit"
     />
+
   </div>
 </template>
 

@@ -8,7 +8,7 @@ defineProps({
   timeLeft:    { type: Number,  default: 60 },
 })
 
-defineEmits(['toggle-mute', 'open-shop', 'start-sprint', 'open-sound-settings'])
+defineEmits(['open-sound-settings', 'go-home'])
 </script>
 
 <template>
@@ -44,43 +44,23 @@ defineEmits(['toggle-mute', 'open-shop', 'start-sprint', 'open-sound-settings'])
       &#x23F3; {{ timeLeft }}s
     </span>
 
-    <!-- Right Controls -->
-    <div class="flex items-center gap-2">
-      <!-- Sprint Button (only when not in timer mode) -->
+    <!-- Right controls -->
+    <div class="flex items-center gap-1">
       <button
-        v-if="!isTimerMode"
-        id="btn-sprint"
-        type="button"
-        class="btn-press flex items-center justify-center h-11 md:h-12 px-3 rounded-xl
+        class="btn-press flex items-center justify-center w-10 h-10 rounded-xl
                hover:scale-110 transition-transform cursor-pointer"
-        aria-label="Start sprint timer"
-        @click="$emit('start-sprint')"
-      >
-        <span class="text-base md:text-lg font-bold text-mushroom-white drop-shadow-md">&#x23F1; Sprint</span>
-      </button>
-
-      <!-- Shop Entry (hidden during timer mode to keep UI simple) -->
-      <button
-        v-if="!isTimerMode"
-        id="btn-shop"
-        type="button"
-        class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
-               rounded-xl hover:scale-110 transition-transform cursor-pointer"
-        aria-label="Open Star Shop"
-        @click="$emit('open-shop')"
-      >
-        <span class="text-xl md:text-2xl drop-shadow-md">🏪</span>
-      </button>
-
-      <!-- Mute / Sound Settings button — opens Sound Settings overlay -->
-      <button
-        id="btn-mute"
-        class="btn-press flex items-center justify-center w-11 h-11 md:w-12 md:h-12
-               rounded-xl hover:scale-110 transition-transform cursor-pointer"
-        :aria-label="isMuted ? 'Open sound settings (currently muted)' : 'Open sound settings'"
+        :aria-label="isMuted ? 'Sound settings (muted)' : 'Sound settings'"
         @click="$emit('open-sound-settings')"
       >
-        <span class="text-xl md:text-2xl drop-shadow-md">{{ isMuted ? '🔇' : '🔊' }}</span>
+        <span class="text-lg drop-shadow-md">{{ isMuted ? '🔇' : '🔊' }}</span>
+      </button>
+      <button
+        class="btn-press flex items-center justify-center w-10 h-10 rounded-xl
+               hover:scale-110 transition-transform cursor-pointer"
+        aria-label="Go home"
+        @click="$emit('go-home')"
+      >
+        <span class="text-lg drop-shadow-md">🏠</span>
       </button>
     </div>
   </header>
