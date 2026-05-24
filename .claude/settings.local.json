@@ -5,7 +5,9 @@
       "Bash(npx vite *)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Skill(gsd-plan-phase)"
+      "Skill(gsd-plan-phase)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\Hector\\\\Documents\\\\EmmaApp\\\\public\\\\voices\\\\peach\")",
+      "Bash(Select-Object FullName, Name)"
     ]
   }
 }
