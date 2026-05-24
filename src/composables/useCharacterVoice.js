@@ -30,7 +30,7 @@ const PHRASES = {
   },
   daisy: {
     correct:  ['Oh yeah!', 'Awesome!', "That's what I'm talking about!", 'You nailed it!', 'So good!', 'Incredible!', 'Get some!'],
-    wrong:    ['Oops! Try again!', 'Almost!', "You've got this!", 'Shake it off!'],
+    wrong:    ['Oops! Try again!', 'Almost!', "You've got this!", 'Shake it off!', 'Keep going!'],
     streak3:  ['Three for three! You are on a roll!'],
     streak5:  ['FIVE! You are absolutely crushing it!'],
     streak10: ['TEN! Oh yeah! You are a champion!'],
