@@ -274,6 +274,7 @@ function onGoHome () {
   selectedMode.value = null
   selectedCharacter.value = null
   stopThemeMusic()
+  resetIdleTimer()
 }
 
 /* ── Character Selection ──────────────────────────────────────── */
