@@ -265,6 +265,25 @@ const unlockedOperator = computed(() => {
   return null
 })
 
+/* ── Background ───────────────────────────────────────────────── */
+const BG_GRADIENTS = {
+  peach:    'linear-gradient(180deg, #f472b6 0%, #fda4c8 20%, #fecdd3 45%, #fde68a 75%, #86efac 100%)',
+  daisy:    'linear-gradient(180deg, #c2410c 0%, #ea580c 15%, #fb923c 35%, #fde68a 65%, #65a30d 88%, #365314 100%)',
+  rosalina: 'linear-gradient(180deg, #020617 0%, #0c0a2e 25%, #1e1b4b 55%, #312e81 80%, #1e1b4b 100%)',
+  toad:     'linear-gradient(180deg, #1e40af 0%, #2563eb 18%, #60a5fa 42%, #bae6fd 62%, #86efac 80%, #4d7c0f 100%)',
+}
+const BG_FALLBACK = 'linear-gradient(180deg, #4A90D9 0%, #87CEEB 40%, #7ADB7E 75%, #8D6E4C 100%)'
+
+const bgStyle = computed(() => {
+  const charId = selectedCharacter.value?.id
+  const gradient = BG_GRADIENTS[charId] ?? BG_FALLBACK
+  return {
+    background: charId
+      ? `url(/backgrounds/${charId}.jpg) center/cover no-repeat, ${gradient}`
+      : BG_FALLBACK,
+  }
+})
+
 /* ── Navigation ───────────────────────────────────────────────── */
 function onGoHome () {
   if (isTimerMode.value) {
@@ -435,6 +454,79 @@ watch(showLevelVictory, (val) => {
 </script>
 
 <template>
+  <!-- ★ Background layer (z-0, behind everything) -->
+  <Transition name="bg-fade">
+    <div
+      :key="selectedCharacter?.id ?? 'default'"
+      class="fixed inset-0 z-0"
+      :style="bgStyle"
+    >
+      <div class="absolute inset-0 pointer-events-none overflow-hidden select-none">
+
+        <!-- Rosalina: cosmic starfield -->
+        <template v-if="selectedCharacter?.id === 'rosalina'">
+          <span class="bg-deco" style="top:3%;left:6%;font-size:26px;opacity:.75;animation:bg-twinkle 4s ease-in-out infinite">⭐</span>
+          <span class="bg-deco" style="top:7%;left:28%;font-size:15px;opacity:.55;animation:bg-twinkle 3.2s ease-in-out infinite 1.1s">✨</span>
+          <span class="bg-deco" style="top:2%;right:14%;font-size:22px;opacity:.7;animation:bg-twinkle 5s ease-in-out infinite 0.4s">🌟</span>
+          <span class="bg-deco" style="top:14%;right:7%;font-size:14px;opacity:.5;animation:bg-twinkle 3.8s ease-in-out infinite 2s">⭐</span>
+          <span class="bg-deco" style="top:10%;left:52%;font-size:18px;opacity:.5;animation:bg-twinkle 4.5s ease-in-out infinite 1.6s">✨</span>
+          <span class="bg-deco" style="top:20%;left:38%;font-size:12px;opacity:.4;animation:bg-twinkle 6s ease-in-out infinite 3s">⭐</span>
+          <span class="bg-deco" style="top:5%;right:38%;font-size:16px;opacity:.6;animation:bg-twinkle 4s ease-in-out infinite 2.5s">🌙</span>
+          <span class="bg-deco" style="top:22%;right:22%;font-size:11px;opacity:.4;animation:bg-twinkle 5s ease-in-out infinite 1s">⭐</span>
+          <span class="bg-deco" style="top:28%;left:12%;font-size:13px;opacity:.35;animation:bg-twinkle 7s ease-in-out infinite 4s">🌟</span>
+          <span class="bg-deco" style="top:18%;left:70%;font-size:10px;opacity:.3;animation:bg-twinkle 5.5s ease-in-out infinite 2s">✨</span>
+        </template>
+
+        <!-- Peach: clouds + drifting cherry blossoms -->
+        <template v-else-if="selectedCharacter?.id === 'peach'">
+          <span class="bg-deco" style="top:4%;left:2%;font-size:72px;opacity:.55;animation:bg-cloud 28s ease-in-out infinite">☁️</span>
+          <span class="bg-deco" style="top:11%;right:6%;font-size:55px;opacity:.45;animation:bg-cloud 38s ease-in-out infinite reverse">☁️</span>
+          <span class="bg-deco" style="top:20%;left:30%;font-size:44px;opacity:.38;animation:bg-cloud 48s ease-in-out infinite 6s">☁️</span>
+          <span class="bg-deco" style="top:3%;right:32%;font-size:36px;opacity:.32;animation:bg-cloud 34s ease-in-out infinite reverse 11s">☁️</span>
+          <span class="bg-deco" style="top:8%;left:56%;font-size:30px;opacity:.35;animation:bg-cloud 55s ease-in-out infinite 9s">☁️</span>
+          <span class="bg-deco" style="top:28%;left:4%;font-size:24px;opacity:.5;animation:bg-float 7s ease-in-out infinite">🌸</span>
+          <span class="bg-deco" style="top:33%;right:5%;font-size:20px;opacity:.45;animation:bg-float 9s ease-in-out infinite 2.5s">🌸</span>
+          <span class="bg-deco" style="top:40%;left:44%;font-size:18px;opacity:.38;animation:bg-float 11s ease-in-out infinite 5s">🌸</span>
+          <span class="bg-deco" style="top:22%;right:18%;font-size:16px;opacity:.35;animation:bg-float 8s ease-in-out infinite 3.5s">🌸</span>
+        </template>
+
+        <!-- Daisy: bright clouds + sunflowers -->
+        <template v-else-if="selectedCharacter?.id === 'daisy'">
+          <span class="bg-deco" style="top:4%;left:2%;font-size:72px;opacity:.6;animation:bg-cloud 22s ease-in-out infinite">☁️</span>
+          <span class="bg-deco" style="top:10%;right:5%;font-size:58px;opacity:.52;animation:bg-cloud 30s ease-in-out infinite reverse">☁️</span>
+          <span class="bg-deco" style="top:18%;left:27%;font-size:48px;opacity:.44;animation:bg-cloud 42s ease-in-out infinite 4s">☁️</span>
+          <span class="bg-deco" style="top:2%;right:42%;font-size:38px;opacity:.38;animation:bg-cloud 26s ease-in-out infinite reverse 8s">☁️</span>
+          <span class="bg-deco" style="top:6%;left:58%;font-size:32px;opacity:.4;animation:bg-cloud 36s ease-in-out infinite 2s">☁️</span>
+          <span class="bg-deco" style="top:28%;left:3%;font-size:32px;opacity:.55;animation:bg-float 6s ease-in-out infinite">🌻</span>
+          <span class="bg-deco" style="top:34%;right:4%;font-size:28px;opacity:.5;animation:bg-float 8s ease-in-out infinite 3s">🌻</span>
+          <span class="bg-deco" style="top:40%;left:48%;font-size:22px;opacity:.4;animation:bg-float 10s ease-in-out infinite 5s">🌼</span>
+          <span class="bg-deco" style="top:22%;right:20%;font-size:18px;opacity:.38;animation:bg-float 7s ease-in-out infinite 1.5s">🌼</span>
+        </template>
+
+        <!-- Toad: classic Mario sky — plenty of clouds + mushrooms -->
+        <template v-else-if="selectedCharacter?.id === 'toad'">
+          <span class="bg-deco" style="top:3%;left:1%;font-size:80px;opacity:.6;animation:bg-cloud 20s ease-in-out infinite">☁️</span>
+          <span class="bg-deco" style="top:12%;right:4%;font-size:62px;opacity:.55;animation:bg-cloud 28s ease-in-out infinite reverse">☁️</span>
+          <span class="bg-deco" style="top:5%;left:33%;font-size:50px;opacity:.48;animation:bg-cloud 38s ease-in-out infinite 5s">☁️</span>
+          <span class="bg-deco" style="top:18%;left:60%;font-size:42px;opacity:.42;animation:bg-cloud 26s ease-in-out infinite reverse 9s">☁️</span>
+          <span class="bg-deco" style="top:1%;right:46%;font-size:34px;opacity:.4;animation:bg-cloud 32s ease-in-out infinite 2s">☁️</span>
+          <span class="bg-deco" style="top:22%;left:18%;font-size:30px;opacity:.38;animation:bg-cloud 44s ease-in-out infinite reverse 14s">☁️</span>
+          <span class="bg-deco" style="top:28%;left:4%;font-size:34px;opacity:.55;animation:bg-float 6s ease-in-out infinite">🍄</span>
+          <span class="bg-deco" style="top:32%;right:6%;font-size:28px;opacity:.5;animation:bg-float 8s ease-in-out infinite 3s">🍄</span>
+          <span class="bg-deco" style="top:38%;left:50%;font-size:22px;opacity:.4;animation:bg-float 10s ease-in-out infinite 5s">⭐</span>
+        </template>
+
+        <!-- Default / title screen -->
+        <template v-else>
+          <span class="bg-deco" style="top:8%;left:5%;font-size:64px;opacity:.4;animation:bg-cloud 25s ease-in-out infinite">☁️</span>
+          <span class="bg-deco" style="top:15%;right:10%;font-size:48px;opacity:.32;animation:bg-cloud 36s ease-in-out infinite reverse">☁️</span>
+          <span class="bg-deco" style="top:24%;left:38%;font-size:38px;opacity:.26;animation:bg-cloud 48s ease-in-out infinite 9s">☁️</span>
+        </template>
+
+      </div>
+    </div>
+  </Transition>
+
   <!-- Streak milestone screen flash (sits above everything) -->
   <Transition name="flash-fade">
     <div
@@ -586,6 +678,34 @@ watch(showLevelVictory, (val) => {
 </template>
 
 <style scoped>
+/* ── Background layer transition ─────────────────────────────── */
+.bg-fade-enter-active { transition: opacity 0.8s ease; }
+.bg-fade-leave-active { transition: opacity 0.5s ease; position: fixed; inset: 0; }
+.bg-fade-enter-from,
+.bg-fade-leave-to     { opacity: 0; }
+
+.bg-deco {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+}
+
+@keyframes bg-cloud {
+  0%, 100% { transform: translateX(0px); }
+  50%       { transform: translateX(50px); }
+}
+
+@keyframes bg-float {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50%       { transform: translateY(-14px) rotate(6deg); }
+}
+
+@keyframes bg-twinkle {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50%       { opacity: 1;    transform: scale(1.25); }
+}
+
 /* ── Streak screen flash ─────────────────────────────────────── */
 .flash-gold { background: rgba(255, 215, 0, 0.35); }
 .flash-star { background: rgba(255, 140, 0, 0.28); }
