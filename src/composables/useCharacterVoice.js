@@ -68,13 +68,32 @@ function pickIndex (arr) {
   return Math.floor(Math.random() * arr.length)
 }
 
+/* ── Single active voice slot — stops previous clip before playing ── */
+let currentAudio = null
+
+function stopCurrent () {
+  if (currentAudio) {
+    currentAudio.pause()
+    currentAudio = null
+  }
+  window.speechSynthesis?.cancel()
+}
+
 /* ── Try to play a pre-recorded file, fall back to TTS ───────────── */
 function playOrSpeak (characterId, type, index, fallbackText) {
+  stopCurrent()
   const src = `/voices/${characterId}/${type}/${index}.mp3`
   const audio = new Audio(src)
-
-  audio.onerror = () => speakFallback(fallbackText, characterId)
-  audio.play().catch(() => speakFallback(fallbackText, characterId))
+  currentAudio = audio
+  audio.onended = () => { if (currentAudio === audio) currentAudio = null }
+  audio.onerror = () => {
+    if (currentAudio === audio) currentAudio = null
+    speakFallback(fallbackText, characterId)
+  }
+  audio.play().catch(() => {
+    if (currentAudio === audio) currentAudio = null
+    speakFallback(fallbackText, characterId)
+  })
 }
 
 function speakFallback (text, characterId) {

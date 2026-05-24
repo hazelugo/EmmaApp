@@ -361,11 +361,13 @@ function onSubmit () {
 
     if (isStreakMilestone) {
       fireStreakExplosion(streak.value)
-      const milestoneText = voice.sayStreakMilestone(streak.value, charId, isMuted.value)
-      idleMessage.value = milestoneText
-      clearTimeout(idleClearTimer)
-      idleClearTimer = setTimeout(() => { idleMessage.value = '' }, 3000)
-      playStreak()
+      if (!showLevelVictory.value) {
+        const milestoneText = voice.sayStreakMilestone(streak.value, charId, isMuted.value)
+        idleMessage.value = milestoneText
+        clearTimeout(idleClearTimer)
+        idleClearTimer = setTimeout(() => { idleMessage.value = '' }, 3000)
+        playStreak()
+      }
     } else {
       confetti({
         particleCount: 40,
